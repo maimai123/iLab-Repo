@@ -1,0 +1,28 @@
+@import '../../styles/index.less';
+
+.iLab-pro-table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: @Sp-3;
+
+  &-side {
+    &-right {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  &-options {
+    font-size: @Fs-4;
+    line-height: @Lh-4;
+    cursor: pointer;
+    margin-left: @Sp-6;
+
+    &-setting-popover {
+      .ant-popover-inner-content {
+        padding: 0;
+      }
+    }
+  }
+}

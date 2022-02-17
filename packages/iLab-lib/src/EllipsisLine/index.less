@@ -1,0 +1,53 @@
+@import '../styles/index.less';
+
+.ellipsis {
+  position: relative;
+  padding: 0;
+  width: 100%;
+  text-align: left;
+  background: #ffffff;
+  line-height: 1.5;
+
+  &-hidden {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  &-container {
+    display: box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-orient: vertical;
+    /* stylelint-disable-next-line */
+    display: -webkit-box;
+    /* stylelint-disable-next-line */
+    -webkit-box-orient: vertical;
+  }
+
+  .generate-rows(30);
+  .generate-rows(@n, @i: 1) when (@i =< @n) {
+    .rows-@{i} {
+      -webkit-line-clamp: @i;
+    }
+    .generate-rows(@n, (@i + 1));
+  }
+  .generate-rows(20);
+
+  &-more {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    background: inherit;
+    line-height: normal;
+
+    div {
+      padding: 0 4px;
+      cursor: pointer;
+      color: #a9a9b9;
+    }
+  }
+}

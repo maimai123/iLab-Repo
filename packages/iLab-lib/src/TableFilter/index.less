@@ -1,0 +1,46 @@
+@import '../styles/index.less';
+
+.iLab-table-filter {
+  position: relative;
+
+  &-fixed {
+    height: 86px;
+    transition: all 0.2s;
+
+    &.iLab-table-filter-expanded {
+      .iLab-table-filter-form {
+        position: absolute;
+        width: 100%;
+        padding: @Sp-5 @Sp-8;
+        background-color: #ffffff;
+        box-shadow: @Sh-2;
+        border-radius: @Ra-1;
+        z-index: 9;
+      }
+    }
+  }
+
+  &-static {
+    height: 100%;
+
+    &.iLab-table-filter-expanded {
+      .iLab-table-filter-form {
+        padding-bottom: @Sp-5;
+      }
+    }
+  }
+
+  &-collapsed {
+    overflow: hidden;
+  }
+
+  &-btn {
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+
+  .ant-picker,
+  .ant-picker-range {
+    display: flex;
+  }
+}

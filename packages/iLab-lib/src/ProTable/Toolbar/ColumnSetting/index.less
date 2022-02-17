@@ -1,0 +1,31 @@
+@import '../../../styles/var.less';
+
+.iLab-pro-table-toolbar-column-setting {
+  min-width: 120px;
+
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: @Sp-2 @Sp-3;
+    border-bottom: 1px solid @M7;
+
+    &-text {
+      color: #000;
+      font-weight: 600;
+    }
+
+    .ant-btn {
+      padding: 0;
+    }
+  }
+
+  &-body {
+    padding: @Sp-2 @Sp-5 @Sp-4;
+
+    .ant-checkbox-group-item {
+      display: flex;
+      margin-right: 0;
+    }
+  }
+}
