@@ -9,7 +9,7 @@ import DrawerFilter from '../../DrawerFilter';
 import classnames from 'classnames';
 import TableContext from '../context';
 import ColumnSetting from './ColumnSetting';
-import { IProps as drawerProps } from '@/DrawerFilter';
+import { IProps as drawerProps } from '../../DrawerFilter';
 import './index.less';
 
 interface OptionsProps {

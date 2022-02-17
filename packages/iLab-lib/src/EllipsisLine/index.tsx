@@ -1,5 +1,5 @@
-import classnames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
+import classnames from 'classnames';
 
 import styles from './index.less';
 
@@ -48,7 +48,7 @@ const EllipsisLine: React.FC<IProps> = (props: IProps) => {
       <div
         className={classnames(
           styles['ellipsis-container'],
-          styles[`rows-${(!visible && row) || undefined}`],
+          styles[`rows-${(!visible && row)}`],
         )}
         ref={shortRef}
       >
