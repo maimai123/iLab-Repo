@@ -1,0 +1,8 @@
+28 error Error: Command failed with exit code 1: git add -- packages/iLab-lib/package.json packages/iLab-lib/package-lock.json
+28 error The following paths are ignored by one of your .gitignore files:
+28 error packages/iLab-lib/package-lock.json
+28 error Use -f if you really want to add them.
+28 error     at makeError (/usr/local/lib/node_modules/lerna/node_modules/execa/lib/error.js:59:11)
+28 error     at handlePromise (/usr/local/lib/node_modules/lerna/node_modules/execa/index.js:114:26)
+28 error     at processTicksAndRejections (internal/process/task_queues.js:93:5)
+28 error     at async Promise.all (index 0)
