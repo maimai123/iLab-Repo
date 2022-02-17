@@ -6,7 +6,7 @@ Demo:
 
 ```tsx
 import React from 'react';
-import { EllipsisLine } from 'iLab-lib';
+import { EllipsisLine } from 'ilab-lib';
 
 export default () => (
   <div style={{ width: 500, border: '1px solid #bdbdbd', padding: 16 }}>

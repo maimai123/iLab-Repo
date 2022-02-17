@@ -1,4 +1,4 @@
-# iLab-lib
+# ilab-lib
 
 ## Getting Started
 

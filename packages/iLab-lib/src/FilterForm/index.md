@@ -6,7 +6,7 @@ Demo: 展示操作项
 
 ```tsx
 import React from 'react';
-import { FilterForm } from 'iLab-lib';
+import { FilterForm } from 'ilab-lib';
 import { Input } from 'antd';
 
 export default () => {
@@ -112,7 +112,7 @@ Demo: 自定义操作项
 
 ```tsx
 import React, { useRef } from 'react';
-import { FilterForm } from 'iLab-lib';
+import { FilterForm } from 'ilab-lib';
 import { Button } from 'antd';
 
 export default () => {

@@ -1,5 +1,5 @@
 {
-  "name": "iLab-lib",
+  "name": "ilab-lib",
   "version": "0.0.3",
   "scripts": {
     "start": "dumi dev",
@@ -40,5 +40,6 @@
     "lint-staged": "^10.0.7",
     "prettier": "^2.2.1",
     "yorkie": "^2.0.0"
-  }
+  },
+  "gitHead": "559421463c48f1ba24f9bb9aa27eedd2b87bf595"
 }

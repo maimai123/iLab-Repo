@@ -10,7 +10,7 @@ group:
 
 ```tsx
 import React from 'react';
-import { TableFilter } from 'iLab-lib';
+import { TableFilter } from 'ilab-lib';
 
 export default () => {
   const options = [

@@ -10,8 +10,8 @@ group:
 
 ```tsx
 import React, { useRef } from 'react';
-import { DrawerTable } from 'iLab-lib';
-import { ActionType } from 'iLab-lib/lib/ProTable';
+import { DrawerTable } from 'ilab-lib';
+import { ActionType } from 'ilab-lib/lib/ProTable';
 import { Tag, Button, Space, Input } from 'antd';
 import moment from 'moment';
 

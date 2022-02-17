@@ -6,7 +6,7 @@ Demo: 默认
 
 ```tsx
 import React from 'react';
-import { DrawerFilter } from 'iLab-lib';
+import { DrawerFilter } from 'ilab-lib';
 import { Input, Button } from 'antd';
 
 export default () => {
@@ -43,7 +43,7 @@ Demo: 自定义
 
 ```tsx
 import React from 'react';
-import { DrawerFilter } from 'iLab-lib';
+import { DrawerFilter } from 'ilab-lib';
 import { Input, Button } from 'antd';
 
 export default () => {
