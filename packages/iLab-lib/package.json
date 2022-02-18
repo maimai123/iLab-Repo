@@ -1,6 +1,6 @@
 {
   "name": "ilab-lib",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "scripts": {
     "start": "dumi dev",
     "docs:build": "dumi build",
@@ -50,5 +50,5 @@
     "prettier": "^2.2.1",
     "yorkie": "^2.0.0"
   },
-  "gitHead": "4d76f94ad67cc86b879327ebc15791032e1b429c"
+  "gitHead": "481828e6360a1bff10b0106bdf8f422615146157"
 }
