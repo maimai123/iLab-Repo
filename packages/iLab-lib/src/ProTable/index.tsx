@@ -339,7 +339,7 @@ const ProTable = <RecordType extends object = any>(
       }}
     >
       <div className={classnames("iLab-pro-table", className)} style={style}>
-        {/* 搜索表单 默认展示搜索表单 toolbar showFilter开启则不展示*/}
+        {/* 搜索表单 默认展示搜索表单 toolbar showFilter开启则不展示 */}
         {
           !toolbar?.showFilter && <TableFilter
             className={classnames('iLab-pro-table-filter', formClassName)}
