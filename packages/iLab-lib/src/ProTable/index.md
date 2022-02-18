@@ -224,6 +224,60 @@ export default () => {
 };
 ```
 
+### 筛选抽屉用法
+
+```tsx
+import React, { useRef } from 'react';
+import { ProTable } from 'ilab-lib';
+import { ActionType } from 'ilab-lib/lib/ProTable';
+import { Tag, Button, Space, Input } from 'antd';
+import moment from 'moment';
+
+export default () => {
+  const columns = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      search: true,
+      valueType: 'select',
+      valueEnum: new Map([
+        [1, { text: 'online', status: 'success' }],
+        [2, { text: 'offline', status: 'error' }],
+      ]),
+    },
+  ];
+
+  const dataSource = new Array(40).fill('').map((_, index) => ({
+    id: index,
+    status: 1,
+  }));
+
+  const toolbar = {
+    options: {
+      columnSetting: true,
+    },
+    showFilter: true
+  };
+
+  const actionRef = useRef<ActionType>();
+
+  return (
+    <ProTable
+      actionRef={actionRef}
+      columns={columns}
+      dataSource={dataSource}
+      rowKey="id"
+      toolbar={toolbar}
+      formMode='static'
+    />
+  );
+};
+```
+
 ### API
 
 #### ProTable

@@ -4,6 +4,7 @@ import { FormProps } from 'antd/lib/form';
 import { TableProps, ColumnProps } from 'antd/lib/table';
 import { SorterResult, Key } from 'antd/lib/table/interface';
 import { PresetStatusColorType } from 'antd/lib/_util/colors';
+import { IProps as drawerProps } from '@/DrawerFilter';
 import classnames from 'classnames';
 import moment from 'moment';
 import _ from 'lodash';
@@ -72,6 +73,8 @@ export interface ProTableProps<Column> extends TableProps<Column> {
   ) => Promise<RequestData>;
   params?: object;
   columns: Array<ProColumn<Column>>;
+  className?: string;
+  style?: React.CSSProperties;
   tableClassName?: string;
   tableStyle?: React.CSSProperties;
   formClassName?: string;
@@ -84,6 +87,7 @@ export interface ProTableProps<Column> extends TableProps<Column> {
   defaultPagination?: IPagination;
   formMode?: 'fixed' | 'static';
   defaultCollapsed?: boolean;
+  drawerProps?: drawerProps; // 筛选组件
   onFilterSearch?: (values: any) => void;
   onFilterReset?: () => void;
 }
@@ -95,6 +99,8 @@ const ProTable = <RecordType extends object = any>(
     request,
     params,
     columns,
+    className,
+    style,
     tableClassName,
     tableStyle,
     formClassName,
@@ -105,6 +111,7 @@ const ProTable = <RecordType extends object = any>(
     actionRef,
     defaultPagination = DEFAULT_PAGINATION,
     defaultCollapsed,
+    drawerProps,
     pagination,
     onFilterSearch,
     onFilterReset,
@@ -331,21 +338,23 @@ const ProTable = <RecordType extends object = any>(
         fetchData,
       }}
     >
-      <div className="iLab-pro-table">
-        {/* 搜索表单 */}
-        <TableFilter
-          className={classnames('iLab-pro-table-filter', formClassName)}
-          style={formStyle}
-          fields={fields}
-          onSearch={onTableFilterSearch}
-          onReset={onTableFilterReset}
-          formProps={formProps}
-          mode={formMode}
-          defaultCollapsed={defaultCollapsed}
-          actionRef={tableFilterRef}
-        />
+      <div className={classnames("iLab-pro-table", className)} style={style}>
+        {/* 搜索表单 默认展示搜索表单 toolbar showFilter开启则不展示*/}
+        {
+          !toolbar?.showFilter && <TableFilter
+            className={classnames('iLab-pro-table-filter', formClassName)}
+            style={formStyle}
+            fields={fields}
+            onSearch={onTableFilterSearch}
+            onReset={onTableFilterReset}
+            formProps={formProps}
+            mode={formMode}
+            defaultCollapsed={defaultCollapsed}
+            actionRef={tableFilterRef}
+          />
+        }
         {/* 操作栏 */}
-        {toolbar && <Toolbar {...toolbar} />}
+        {toolbar && <Toolbar {...toolbar} fields={fields} drawerProps={drawerProps} onSearch={onTableFilterSearch} onReset={onTableFilterReset}/>}
         {/* 表格 */}
         <Table
           className={classnames('iLab-pro-table-table', tableClassName)}
@@ -357,7 +366,7 @@ const ProTable = <RecordType extends object = any>(
             current: page.current,
             pageSize: page.pageSize,
             total,
-            showQuickJumper: true,
+            showQuickJumper: false,
             showSizeChanger: true,
             showTotal: t => `共${t}条`,
             onChange: handlePageChange,
