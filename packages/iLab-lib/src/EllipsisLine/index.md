@@ -1,6 +1,11 @@
+---
+group:
+  title: EllipsisLine 组件
+  order: 3
+---
 
-## EllipsisLine
-#多行截断组件
+## EllipsisLine 组件
+多行截断组件
 
 Demo:
 

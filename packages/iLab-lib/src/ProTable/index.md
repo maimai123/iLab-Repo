@@ -1,7 +1,7 @@
 ---
 group:
   title: ProTable 组件
-  order:
+  order: 7
 ---
 
 ## ProTable 组件
@@ -215,6 +215,7 @@ export default () => {
       columns={columns}
       dataSource={dataSource}
       rowKey="id"
+      remember
       toolbar={toolbar}
       formProps={{
         initialValues: {
@@ -307,12 +308,36 @@ tips: 开启表格右上角设置配置展示字段时，一个页面有多个�
 | defaultPagination | 默认分页方式                                                                    | `{ current: number, pageSize: number }`                             | `{ current: 1, pageSize: 10 }` |
 | formMode          | 搜索项展开的展示模式                                                            | `fixed` \| `static`                                                 | `fixed`                        |
 | defaultCollapsed  | 搜索表单默认收起状态                                                            | boolean                                                             | true                           |
+| remember | 是否记住分页，搜索字段（需要在详情页面配合）          | boolean           | false |
 | onFilterSearch    | 搜索回调                                                                        | (values: any) => void                                               | --                             |
 | onFilterReset     | 重置回调                                                                        | () => void                                                          | --                             |
 
 > **注意**
 >
 > 组件中 `pagination` 属性中配置项 `current`、`pageSize`、`total`、`showQuickJumper`、`showSizeChanger`、`showTotal`、`onChange`、`onShowSizeChange` 已根据业务内容进行重写，重复配置无效， `current`、`pageSize` 属性可在 `defaultPagination` 中进行修改
+
+> 开启`remember`以后，需要在详情页配合，具体配置如下：
+```javascript
+import React, { useEffect } from 'react';
+import { useHistory } from "react-router-dom";
+
+const history = useHistory();
+const { pathname } = history.location;
+let UNLISTEN: () => void;
+
+useEffect(() => {
+  UNLISTEN = history.listen((location: any) => {
+    if (!pathname.includes(location.pathname)) { // 跳转到除列表页的其他页面清空localStorage
+      localStorage.removeItem(`[列表页pathname]-[列表页table的id，默认为basic]-Page`)
+    }
+  })
+  return () => {
+    UNLISTEN && UNLISTEN()
+  }
+}, [])
+
+```
+
 
 #### ProColumn 列定义
 

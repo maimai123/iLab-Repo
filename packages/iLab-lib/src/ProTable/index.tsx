@@ -5,6 +5,7 @@ import { TableProps, ColumnProps } from 'antd/lib/table';
 import { SorterResult, Key } from 'antd/lib/table/interface';
 import { PresetStatusColorType } from 'antd/lib/_util/colors';
 import { IProps as drawerProps } from '@/DrawerFilter';
+import { useHistory } from "react-router-dom"
 import classnames from 'classnames';
 import moment from 'moment';
 import _ from 'lodash';
@@ -89,6 +90,7 @@ export interface ProTableProps<Column> extends TableProps<Column> {
   formMode?: 'fixed' | 'static';
   defaultCollapsed?: boolean;
   drawerProps?: drawerProps; // 筛选组件
+  remember: boolean; // 记住page功能
   onFilterSearch?: (values: any) => void;
   onFilterReset?: () => void;
 }
@@ -115,10 +117,13 @@ const ProTable = <RecordType extends object = any>(
     defaultCollapsed,
     drawerProps,
     pagination,
+    remember,
     onFilterSearch,
     onFilterReset,
     ...rest
   } = props;
+  const history = useHistory()
+  const { pathname } = history.location
   // loading 状态
   const [loading, setLoading] = useState<boolean>(false);
   // 表格字段
@@ -141,8 +146,8 @@ const ProTable = <RecordType extends object = any>(
   const [proFilter, setProFilter] = useState<{
     [key: string]: React.ReactText[];
   }>({});
-
   const tableFilterRef = useRef<TableFilterActionType>();
+  let UNLISTEN: () => void;
 
   useEffect(() => {
     // 设置表格字段内容
@@ -154,10 +159,27 @@ const ProTable = <RecordType extends object = any>(
   }, [params, page, proSort, setProFilter]);
 
   useEffect(() => {
+    if (remember) {
+      /* TODO 从列表跳详情记住page，从详情跳回列表回填，但从详情跳转别的页面再跳回list，不应该记住page但是page还在*/
+      UNLISTEN = history.listen((location: any) => {
+        if (!location.pathname.includes(pathname)) { // 跳转详情不清空page
+          localStorage.removeItem(`${pathname}-${id}-Page`)
+        }
+      })
+      const localPagination = localStorage.getItem(`${pathname}-${id}-Page`)
+      setPage(localPagination && JSON.parse(localPagination) || defaultPagination)
+    }
+    return () => {
+      UNLISTEN && UNLISTEN()
+    }
+  }, [])
+
+  useEffect(() => {
     // 给 actionRef 方法赋值
     const userAction: ActionType = {
       reload: async (resetPageIndex?: boolean) => {
         if (resetPageIndex) {
+          setParamsStorage('Page', defaultPagination)
           setPage(_.cloneDeep(defaultPagination));
         } else {
           await fetchData();
@@ -174,6 +196,10 @@ const ProTable = <RecordType extends object = any>(
       actionRef.current = userAction;
     }
   }, [props]);
+
+  const setParamsStorage = (type: string, param: {[x: string]: any}) => {
+    remember && param && localStorage.setItem(`${pathname}-${id}-${type}`, JSON.stringify(param))
+  }
 
   // 表单渲染字段
   const fields: IField[] = columns
@@ -241,7 +267,7 @@ const ProTable = <RecordType extends object = any>(
         };
       });
     // 从localStorage取 || 全部选中
-    const resetColumn = localStorage.getItem(`${window.location.pathname}-${id}-Col`) ? (localStorage.getItem(`${window.location.pathname}-${id}-Col`) || '').split(',') : ret.map(item => item.dataIndex)
+    const resetColumn = localStorage.getItem(`${pathname}-${id}-Col`) ? (localStorage.getItem(`${pathname}-${id}-Col`) || '').split(',') : ret.map(item => item.dataIndex)
     setSelectedDataIndex(resetColumn);
     return ret;
   };
@@ -294,6 +320,7 @@ const ProTable = <RecordType extends object = any>(
       onFilterSearch(values);
     }
     try {
+      setParamsStorage('Page', { current: 1, pageSize: defaultPagination.pageSize })
       setPage({ current: 1, pageSize: defaultPagination.pageSize });
     } catch (err) {
       console.log(err);
@@ -306,6 +333,7 @@ const ProTable = <RecordType extends object = any>(
       onFilterReset();
     }
     try {
+      setParamsStorage('Page', { current: 1, pageSize: defaultPagination.pageSize })
       setPage({ current: 1, pageSize: defaultPagination.pageSize });
     } catch (err) {
       console.log(err);
@@ -317,6 +345,7 @@ const ProTable = <RecordType extends object = any>(
     current: number,
     pageSize: number = defaultPagination.pageSize,
   ) => {
+    setParamsStorage('Page', { current, pageSize })
     setPage({
       current,
       pageSize,
@@ -325,6 +354,10 @@ const ProTable = <RecordType extends object = any>(
 
   // 改变 pageSize
   const handlePageSizeChange = async (current: number, size: number) => {
+    setParamsStorage('Page', {
+      current,
+      pageSize: size,
+    })
     setPage({
       current,
       pageSize: size,

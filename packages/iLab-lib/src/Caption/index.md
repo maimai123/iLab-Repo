@@ -1,7 +1,7 @@
 ---
 group:
   title: Caption 组件
-  order: 8
+  order: 2
 ---
 
 ## Caption 组件

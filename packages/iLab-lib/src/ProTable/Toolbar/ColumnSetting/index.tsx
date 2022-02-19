@@ -10,8 +10,6 @@ const ColumnSetting: React.FC<ColumnSettingProps> = () => {
     TableContext,
   );
 
-
-
   return (
     <div className="iLab-pro-table-toolbar-column-setting">
       <div className="iLab-pro-table-toolbar-column-setting-header">

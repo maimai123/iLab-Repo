@@ -1,6 +1,11 @@
+---
+group:
+  title: DrawerFilter 组件
+  order: 5
+---
+### DrawerFilter 组件
 
-## DrawerFilter
-#抽屉筛选
+抽屉式筛选
 
 Demo: 默认
 

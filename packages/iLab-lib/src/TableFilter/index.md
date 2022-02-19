@@ -1,7 +1,7 @@
 ---
 group:
   title: TableFilter 组件
-  order:
+  order: 6
 ---
 
 ## TableFilter 组件

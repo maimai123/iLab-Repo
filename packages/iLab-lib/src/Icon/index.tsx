@@ -7,16 +7,10 @@ const IconFont = createFromIconfontCN({
 
 interface Props {
   type: string
+  style?: React.CSSProperties
   className?: string
-  onClick?: any
-  id?: string
-  title?: string
-  style?: any
-  rotate?: number,
-  spin?: boolean,
-  onMouseEnter?: () => void
-  onMouseLeave?: () => void
-  onBlur?: () => void
+  rotate?: number
+  spin?: boolean
 }
 
 export default function Icon(props: Props): JSX.Element {
