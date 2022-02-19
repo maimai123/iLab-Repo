@@ -43,7 +43,7 @@ export default () => {
       name: 'field5',
       valueType: 'cascader',
       label: '字段5',
-      searchProps: {
+      fieldProps: {
         options,
       },
     },
@@ -51,7 +51,7 @@ export default () => {
       name: 'field6',
       valueType: 'treeSelect',
       label: '字段6',
-      searchProps: {
+      fieldProps: {
         treeData: [
           {
             title: 'Node1',
@@ -99,7 +99,7 @@ export default () => {
 | ----------- | ------------------------------------------------------------------------ | --------------------------------------------------- | ------ |
 | valueType   | 字段展示类型                                                             | `text \| select \| treeSelect \| date \| dateRange` | `text` |
 | valueEnum   | 当 valueType 为 select 时，配置可选项                                    | Map                                                 | -      |
-| searchProps | 透传给查询组件的属性                                                     | object                                              | -      |
+| fieldProps | 透传给查询组件的属性                                                     | object                                              | -      |
 | order       | 筛选项权重，权重大的在前                                                 | number                                              | 0      |
 | -           | 其他属性同 [Form.Item](https://ant.design/components/form-cn/#Form.Item) |                                                     | -      |
 

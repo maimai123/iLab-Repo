@@ -1,6 +1,7 @@
 import React, { useRef, useState, memo } from 'react'
-import FilterForm from '../FilterForm'
 import { Drawer, Button, Space, FormItemProps, ColProps } from 'antd'
+import FilterForm from '../FilterForm'
+import Icon from '@/Icon'
 import { DrawerProps } from 'antd/lib/drawer'
 import { IField, FilterFormProps } from '../FilterForm'
 import './index.less'
@@ -28,7 +29,7 @@ const Index: React.FC<IProps> = (props: IProps) => {
     onClose,
     okText = '查询',
     cancelText = '重置',
-    children = <Button>筛选</Button>,
+    children = <Button><Icon type={'icon-biaoge-shaixuan1'} />筛选</Button>,
     ...rest
   } = props
   const formRef = useRef(null)

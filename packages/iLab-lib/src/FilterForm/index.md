@@ -15,6 +15,9 @@ export default () => {
       label: '姓名',
       name: 'name',
       valueType: 'text',
+      fieldProps: {
+        placeholder: '请输入姓名'
+      }
     },
     {
       label: '生日',

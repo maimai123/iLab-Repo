@@ -31,7 +31,7 @@ export interface IField extends FormItemProps {
   name: string;
   valueType?: ValueType;
   valueEnum?: Map<any, any>;
-  searchProps?: any; // 透穿给表单项内的组件的 props
+  fieldProps?: any; // 透穿给表单项内的组件的 props
   order?: number; // 排序
   show?: boolean; // 是否展示该字段
 }
@@ -88,18 +88,18 @@ const TableFilter: React.FC<TableFilterProps> = ({
     switch (field.valueType) {
       case 'select':
         return field.valueEnum ? (
-          <Select options={field.valueEnum} {...field.searchProps} />
+          <Select options={field.valueEnum} {...field.fieldProps} />
         ) : null;
       case 'treeSelect':
-        return <TreeSelect {...field.searchProps} />;
+        return <TreeSelect {...field.fieldProps} />;
       case 'date':
-        return <DatePicker {...field.searchProps} />;
+        return <DatePicker {...field.fieldProps} />;
       case 'dateRange':
-        return <DateRangePicker {...field.searchProps} />;
+        return <DateRangePicker {...field.fieldProps} />;
       case 'cascader':
-        return <Cascader {...field.searchProps} />;
+        return <Cascader {...field.fieldProps} />;
       default:
-        return <Input {...field.searchProps} />;
+        return <Input {...field.fieldProps} />;
     }
   };
 
@@ -150,7 +150,7 @@ const TableFilter: React.FC<TableFilterProps> = ({
             const {
               valueEnum,
               valueType,
-              searchProps,
+              fieldProps,
               order,
               show,
               ...rest

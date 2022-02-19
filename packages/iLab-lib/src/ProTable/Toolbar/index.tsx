@@ -1,9 +1,6 @@
 import React, { useContext } from 'react';
 import { Space, Popover } from 'antd';
-import {
-  SettingOutlined,
-  RedoOutlined
-} from '@ant-design/icons'
+import Icon from '@/Icon';
 import { IField } from '../../FilterForm'
 import DrawerFilter from '../../DrawerFilter';
 import classnames from 'classnames';
@@ -42,7 +39,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   onSearch,
 }) => {
   const { refresh = false, columnSetting = false } = options;
-  const { fetchData } = useContext(TableContext);
+  const { loading, fetchData } = useContext(TableContext);
 
   const showOptionsBar = Object.values(options).some(item => item);
 
@@ -66,7 +63,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
           </Space>
         {showOptionsBar && (
           <Space className={'iLab-pro-table-toolbar-options'} size={12}>
-            {refresh && <RedoOutlined onClick={fetchData} />}
+            {refresh && <Icon type={'icon-shuaxin'} spin={loading} onClick={fetchData} />}
             {columnSetting && (
               <Popover
                 overlayClassName={
@@ -76,7 +73,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 trigger="click"
                 placement="bottomRight"
               >
-                <SettingOutlined />
+                <Icon type={'icon-ziduanshezhi'} />
               </Popover>
             )}
           </Space>

@@ -35,7 +35,7 @@ export default () => {
       dataIndex: 'personName',
       key: 'personName',
       search: true,
-      searchProps: {
+      fieldProps: {
         placeholder: '请输入 Name',
       },
       render: text => <a>{text}</a>,
@@ -51,7 +51,7 @@ export default () => {
         [1, 'male'],
         [2, 'female'],
       ]),
-      searchProps: {
+      fieldProps: {
         showSearch: true,
         filterOption: (input, option) =>
           option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0,
@@ -67,6 +67,9 @@ export default () => {
         [1, { text: 'online', status: 'success' }],
         [2, { text: 'offline', status: 'error' }],
       ]),
+      fieldProps: {
+        title: '网络'
+      }
     },
     {
       title: 'Tree',
@@ -74,7 +77,7 @@ export default () => {
       key: 'tree',
       search: true,
       valueType: 'treeSelect',
-      searchProps: {
+      fieldProps: {
         treeData: [
           {
             title: 'Node1',
@@ -128,7 +131,7 @@ export default () => {
       key: 'area',
       search: true,
       valueType: 'cascader',
-      searchProps: {
+      fieldProps: {
         options: [
           {
             value: 'zhejiang',
@@ -240,10 +243,14 @@ export default () => {
       dataIndex: 'id',
     },
     {
-      title: 'Status',
+      title: '状态',
       dataIndex: 'status',
       search: true,
       valueType: 'select',
+      fieldProps: {
+        label: '网络',
+        placeholder: '请选择状态'
+      },
       valueEnum: new Map([
         [1, { text: 'online', status: 'success' }],
         [2, { text: 'offline', status: 'error' }],
@@ -267,6 +274,7 @@ export default () => {
 
   return (
     <ProTable
+      id='setting'
       actionRef={actionRef}
       columns={columns}
       dataSource={dataSource}
@@ -281,9 +289,11 @@ export default () => {
 ### API
 
 #### ProTable
+tips: 开启表格右上角设置配置展示字段时，一个页面有多个表格可能导致存取localStorage冲突，可使用传递不同id避免
 
 | 属性              | 说明                                                                            | 类型                                                                | 默认值                         |
 | ----------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------ |
+| id     | 表格唯一标识符                                                                    | string                                                              | 'basic'                             |
 | request           | 获取 `dataSource` 的方法                                                        | `(params?: {pageSize,current},sort,filter) => {data,success,total}` | -                              |
 | params            | 用于 request 查询的额外参数，一旦变化会触发重新加载                             | object                                                              | -                              |
 | columns           | 列定义，[ProColumn](#procolumn-列定义)                                          |                                                                     | --                             |
@@ -312,7 +322,7 @@ export default () => {
 | valueType      | 渲染值类型                                          | `text \| select \| treeSelect \| date \| dateRange \| cascader \| option` | `text`                |
 | valueEnum      | 值的枚举，会自动转化把值当成 key 来取出要显示的内容 | [ValueEnum](#valueenum-定义)                                              | -                     |
 | search         | 是否在搜索栏中显示                                  | boolean                                                                   | false                 |
-| searchProps    | 透传给查询组件的属性                                | object                                                                    | -                     |
+| fieldProps    | 透传给查询组件的属性                                | object                                                                    | -                     |
 | hideInTable    | 是否在表格中隐藏                                    | boolean                                                                   | false                 |
 | dateTimeFormat | 时间类型数据显示格式                                | string                                                                    | `yyyy-MM-DD HH:mm:ss` |
 | order          | 筛选项权重，权重大的在前                            | number                                                                    | 0                     |

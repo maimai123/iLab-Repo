@@ -2,6 +2,9 @@ import React from 'react';
 import { ProColumn } from './index';
 
 interface ITableContext<Column> {
+  id: string;
+  loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   columns: Array<ProColumn<Column>>;
   setColumns: React.Dispatch<React.SetStateAction<Array<ProColumn<Column>>>>;
   selectedDataIndex: string[];
@@ -10,6 +13,9 @@ interface ITableContext<Column> {
 }
 
 const TableContext = React.createContext<ITableContext<any>>({
+  id: 'basic',
+  loading: false,
+  setLoading:  () => {},
   columns: [],
   setColumns: () => {},
   selectedDataIndex: [],

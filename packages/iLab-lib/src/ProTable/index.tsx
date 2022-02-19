@@ -52,7 +52,7 @@ export interface ProColumn<T = any> extends ColumnProps<T> {
   search?: boolean;
   hideInTable?: boolean;
   dateTimeFormat?: string;
-  searchProps?: object;
+  fieldProps?: object;
   order?: number;
 }
 
@@ -64,6 +64,7 @@ export interface ActionType {
 }
 
 export interface ProTableProps<Column> extends TableProps<Column> {
+  id?: string;
   request: (
     params: object,
     sort: {
@@ -96,6 +97,7 @@ const ProTable = <RecordType extends object = any>(
   props: ProTableProps<RecordType>,
 ): JSX.Element => {
   const {
+    id = 'basic',
     request,
     params,
     columns,
@@ -117,6 +119,8 @@ const ProTable = <RecordType extends object = any>(
     onFilterReset,
     ...rest
   } = props;
+  // loading 状态
+  const [loading, setLoading] = useState<boolean>(false);
   // 表格字段
   const [tableColumns, setTableColumns] = useState<
     Array<ProColumn<RecordType>>
@@ -180,7 +184,7 @@ const ProTable = <RecordType extends object = any>(
       name: item.dataIndex,
       valueType: item.valueType || 'text',
       valueEnum: item.valueEnum,
-      searchProps: item.searchProps,
+      fieldProps: item.fieldProps,
       order: item.order,
     }))
     .map(item => {
@@ -237,7 +241,7 @@ const ProTable = <RecordType extends object = any>(
         };
       });
     // 从localStorage取 || 全部选中
-    const resetColumn = localStorage.getItem(`${window.location.pathname}Col`) ? (localStorage.getItem(`${window.location.pathname}Col`) || '').split(',') : ret.map(item => item.dataIndex)
+    const resetColumn = localStorage.getItem(`${window.location.pathname}-${id}-Col`) ? (localStorage.getItem(`${window.location.pathname}-${id}-Col`) || '').split(',') : ret.map(item => item.dataIndex)
     setSelectedDataIndex(resetColumn);
     return ret;
   };
@@ -267,8 +271,8 @@ const ProTable = <RecordType extends object = any>(
 
   // 获取数据
   const fetchData = async () => {
-    console.log('获取数据');
     if (!request) return;
+    setLoading(true)
     try {
       const fetchParams = getFetchParams();
       const res = await request(fetchParams, proSort, proFilter);
@@ -277,8 +281,10 @@ const ProTable = <RecordType extends object = any>(
         setList(data || []);
         setTotal(paginationTotal || 0);
       }
+      setLoading(false)
     } catch (err) {
       console.log(err);
+      setLoading(false)
     }
   };
 
@@ -331,6 +337,9 @@ const ProTable = <RecordType extends object = any>(
   return (
     <TableContext.Provider
       value={{
+        id,
+        loading,
+        setLoading,
         columns: tableColumns,
         setColumns: setTableColumns,
         selectedDataIndex,
@@ -338,7 +347,7 @@ const ProTable = <RecordType extends object = any>(
         fetchData,
       }}
     >
-      <div className={classnames("iLab-pro-table", className)} style={style}>
+      <div id={id} className={classnames("iLab-pro-table", className)} style={style}>
         {/* 搜索表单 默认展示搜索表单 toolbar showFilter开启则不展示 */}
         {
           !toolbar?.showFilter && <TableFilter
@@ -361,6 +370,7 @@ const ProTable = <RecordType extends object = any>(
           style={tableStyle}
           columns={filterUnselectedColumns(tableColumns)}
           dataSource={list}
+          loading={loading}
           pagination={{
             ...pagination,
             current: page.current,

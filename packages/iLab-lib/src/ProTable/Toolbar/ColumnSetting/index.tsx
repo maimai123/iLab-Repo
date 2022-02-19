@@ -6,7 +6,7 @@ import './index.less';
 interface ColumnSettingProps {}
 
 const ColumnSetting: React.FC<ColumnSettingProps> = () => {
-  const { columns, selectedDataIndex, setSelectedDataIndex } = useContext(
+  const { id, columns, selectedDataIndex, setSelectedDataIndex } = useContext(
     TableContext,
   );
 
@@ -21,7 +21,7 @@ const ColumnSetting: React.FC<ColumnSettingProps> = () => {
         <Button
           type="link"
           onClick={() => {
-            localStorage.setItem(`${window.location.pathname}Col`, columns.map(item => item.dataIndex).join())
+            localStorage.setItem(`${window.location.pathname}-${id}-Col`, columns.map(item => item.dataIndex).join())
             setSelectedDataIndex(columns.map(item => item.dataIndex));
           }}
         >
@@ -36,7 +36,7 @@ const ColumnSetting: React.FC<ColumnSettingProps> = () => {
           }))}
           value={selectedDataIndex}
           onChange={checkedValue => {
-            localStorage.setItem(`${window.location.pathname}Col`, checkedValue.join())
+            localStorage.setItem(`${window.location.pathname}-${id}-Col`, checkedValue.join())
             setSelectedDataIndex(checkedValue as string[])
             }
           }
