@@ -7,6 +7,7 @@ import classnames from 'classnames';
 import TableContext from '../context';
 import ColumnSetting from './ColumnSetting';
 import { IProps as drawerProps } from '../../DrawerFilter';
+import { FormProps } from 'antd/lib/form';
 import './index.less';
 
 interface OptionsProps {
@@ -23,6 +24,7 @@ export interface ToolbarProps {
   showFilter?: boolean;
   fields?: IField[];
   drawerProps?: drawerProps;
+  formProps?: FormProps;
   onSearch?: (values: { [x: string]: any }) => void;
   onReset?: () => void;
 }
@@ -36,6 +38,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   showFilter,
   fields,
   drawerProps,
+  formProps,
   onSearch,
 }) => {
   const { refresh = false, columnSetting = false } = options;
@@ -58,7 +61,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
       <div className={'iLab-pro-table-toolbar-side-right'}>
           <Space className={'iLab-pro-table-toolbar-slot'}>
             {showFilter && fields
-            && <DrawerFilter options={fields} onChange={(values) => onSearch && onSearch(values)} {...drawerProps} />}
+            && <DrawerFilter options={fields} onChange={(values) => onSearch && onSearch(values)} formProps={formProps} {...drawerProps} />}
             {slot}
           </Space>
         {showOptionsBar && (

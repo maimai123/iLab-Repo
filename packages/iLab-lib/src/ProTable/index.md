@@ -31,6 +31,13 @@ export default () => {
       valueType: 'dateRange',
     },
     {
+      title: 'DateTime',
+      dataIndex: 'date',
+      key: 'date',
+      search: true,
+      valueType: 'date',
+    },
+    {
       title: 'PersonName',
       dataIndex: 'personName',
       key: 'personName',
@@ -219,7 +226,8 @@ export default () => {
       toolbar={toolbar}
       formProps={{
         initialValues: {
-          dateRange: [moment(), moment()],
+          personName: 'asa',
+          sex: 1
         },
       }}
       formMode='static'
@@ -281,6 +289,11 @@ export default () => {
       dataSource={dataSource}
       rowKey="id"
       toolbar={toolbar}
+      formProps={{
+        initialValues: {
+          status: 1
+        },
+      }}
       formMode='static'
     />
   );

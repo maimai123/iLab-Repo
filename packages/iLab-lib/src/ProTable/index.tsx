@@ -160,13 +160,12 @@ const ProTable = <RecordType extends object = any>(
 
   useEffect(() => {
     if (remember) {
-      /* TODO 从列表跳详情记住page，从详情跳回列表回填，但从详情跳转别的页面再跳回list，不应该记住page但是page还在*/
       UNLISTEN = history.listen((location: any) => {
         if (!location.pathname.includes(pathname)) { // 跳转详情不清空page
           localStorage.removeItem(`${pathname}-${id}-Page`)
         }
       })
-      const localPagination = localStorage.getItem(`${pathname}-${id}-Page`)
+      const localPagination = getParamsStorage('Page')
       setPage(localPagination && JSON.parse(localPagination) || defaultPagination)
     }
     return () => {
@@ -197,6 +196,8 @@ const ProTable = <RecordType extends object = any>(
     }
   }, [props]);
 
+  // 存取Storage
+  const getParamsStorage = (type: string) => localStorage.getItem(`${pathname}-${id}-${type}`)
   const setParamsStorage = (type: string, param: {[x: string]: any}) => {
     remember && param && localStorage.setItem(`${pathname}-${id}-${type}`, JSON.stringify(param))
   }
@@ -267,7 +268,7 @@ const ProTable = <RecordType extends object = any>(
         };
       });
     // 从localStorage取 || 全部选中
-    const resetColumn = localStorage.getItem(`${pathname}-${id}-Col`) ? (localStorage.getItem(`${pathname}-${id}-Col`) || '').split(',') : ret.map(item => item.dataIndex)
+    const resetColumn = getParamsStorage('Col') ? (getParamsStorage('Col') || '').split(',') : ret.map(item => item.dataIndex)
     setSelectedDataIndex(resetColumn);
     return ret;
   };
@@ -396,7 +397,7 @@ const ProTable = <RecordType extends object = any>(
           />
         }
         {/* 操作栏 */}
-        {toolbar && <Toolbar {...toolbar} fields={fields} drawerProps={drawerProps} onSearch={onTableFilterSearch} onReset={onTableFilterReset}/>}
+        {toolbar && <Toolbar {...toolbar} fields={fields} drawerProps={drawerProps} formProps={formProps} onSearch={onTableFilterSearch} onReset={onTableFilterReset}/>}
         {/* 表格 */}
         <Table
           className={classnames('iLab-pro-table-table', tableClassName)}

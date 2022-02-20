@@ -4,6 +4,7 @@ import FilterForm from '../FilterForm'
 import Icon from '@/Icon'
 import { DrawerProps } from 'antd/lib/drawer'
 import { IField, FilterFormProps } from '../FilterForm'
+import { FormProps } from 'antd/lib/form';
 import './index.less'
 
 export interface OptionsType extends FormItemProps {
@@ -16,6 +17,7 @@ export interface IProps extends DrawerProps {
   okText?: React.ReactNode
   cancelText?: React.ReactNode
   onChange: (value: any) => void
+  formProps?: FormProps;
   children?: React.ReactNode
 }
 
@@ -29,6 +31,7 @@ const Index: React.FC<IProps> = (props: IProps) => {
     onClose,
     okText = '查询',
     cancelText = '重置',
+    formProps,
     children = <Button><Icon type={'icon-biaoge-shaixuan1'} />筛选</Button>,
     ...rest
   } = props
@@ -71,6 +74,7 @@ const Index: React.FC<IProps> = (props: IProps) => {
         <FilterForm
           ref={formRef}
           options={options}
+          formProps={formProps}
           {...filterProps}
         />
       </Drawer>
