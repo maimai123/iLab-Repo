@@ -11,6 +11,9 @@ interface Props {
   className?: string
   rotate?: number
   spin?: boolean
+  onMouseEnter?: () => void
+  onMouseLeave?: () => void
+  onBlur?: () => void
 }
 
 export default function Icon(props: Props): JSX.Element {
