@@ -90,7 +90,7 @@ export interface ProTableProps<Column> extends TableProps<Column> {
   formMode?: 'fixed' | 'static';
   defaultCollapsed?: boolean;
   drawerProps?: drawerProps; // 筛选组件
-  remember: boolean; // 记住page功能
+  remember?: boolean; // 记住page功能
   onFilterSearch?: (values: any) => void;
   onFilterReset?: () => void;
 }
@@ -147,6 +147,7 @@ const ProTable = <RecordType extends object = any>(
     [key: string]: React.ReactText[];
   }>({});
   const tableFilterRef = useRef<TableFilterActionType>();
+  const [formData, setFormData] = useState(formProps?.initialValues || {});
   let UNLISTEN: () => void;
 
   useEffect(() => {
@@ -282,7 +283,7 @@ const ProTable = <RecordType extends object = any>(
   // 格式化请求参数
   const getFetchParams = (obj: object = {}) => {
     // 获取查询条件
-    const query = tableFilterRef.current?.getFieldsValue();
+    const query = toolbar?.showFilter ? formData : tableFilterRef.current?.getFieldsValue();
     const p = {
       ...query,
       current: page.current,
@@ -298,10 +299,10 @@ const ProTable = <RecordType extends object = any>(
 
   // 获取数据
   const fetchData = async () => {
+    const fetchParams = getFetchParams();
     if (!request) return;
     setLoading(true)
     try {
-      const fetchParams = getFetchParams();
       const res = await request(fetchParams, proSort, proFilter);
       const { success, data, total: paginationTotal } = res;
       if (success) {
@@ -320,6 +321,7 @@ const ProTable = <RecordType extends object = any>(
     if (onFilterSearch) {
       onFilterSearch(values);
     }
+    if (toolbar?.showFilter) setFormData(values)
     try {
       setParamsStorage('Page', { current: 1, pageSize: defaultPagination.pageSize })
       setPage({ current: 1, pageSize: defaultPagination.pageSize });
@@ -333,6 +335,7 @@ const ProTable = <RecordType extends object = any>(
     if (onFilterReset) {
       onFilterReset();
     }
+    if (toolbar?.showFilter) setFormData({})
     try {
       setParamsStorage('Page', { current: 1, pageSize: defaultPagination.pageSize })
       setPage({ current: 1, pageSize: defaultPagination.pageSize });
