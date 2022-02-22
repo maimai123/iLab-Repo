@@ -53,7 +53,7 @@ export interface ProColumn<T = any> extends ColumnProps<T> {
   search?: boolean;
   hideInTable?: boolean;
   dateTimeFormat?: string;
-  fieldProps?: object;
+  fieldProps?: any;
   order?: number;
 }
 
