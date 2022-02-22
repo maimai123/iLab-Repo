@@ -125,7 +125,7 @@ const FilterForm: React.ForwardRefRenderFunction<unknown, FilterFormProps> = (
       {...formProps}
     >
       <Row gutter={16} className="iLab-filter-form-row" {...rowProps}>
-        {options.sort((a, b) => (b.order || 0) - (a.order || 0)).map(
+        {options.sort((a, b) => (a.order || 0) - (b.order || 0)).map(
           (
             item: IField,
             index: React.Key | null | undefined

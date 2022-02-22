@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Checkbox, Button } from 'antd';
+import { Checkbox, Button, Typography } from 'antd';
 import TableContext from '../../context';
 import './index.less';
 
@@ -16,15 +16,14 @@ const ColumnSetting: React.FC<ColumnSettingProps> = () => {
         <span className="iLab-pro-table-toolbar-column-setting-header-text">
           列展示
         </span>
-        <Button
-          type="link"
+        <Typography.Link
           onClick={() => {
             localStorage.setItem(`${window.location.pathname}-${id}-Col`, columns.map(item => item.dataIndex).join())
             setSelectedDataIndex(columns.map(item => item.dataIndex));
           }}
         >
           重置
-        </Button>
+        </Typography.Link>
       </div>
       <div className="iLab-pro-table-toolbar-column-setting-body">
         <Checkbox.Group

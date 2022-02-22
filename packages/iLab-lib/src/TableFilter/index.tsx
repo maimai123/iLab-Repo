@@ -106,7 +106,7 @@ const TableFilter: React.FC<TableFilterProps> = ({
   // 实际渲染字段
   const renderFields = (data: IField[]) => {
     return data
-      .sort((a, b) => (b.order || 0) - (a.order || 0))
+      .sort((a, b) => (a.order || 0) - (b.order || 0))
       .map((item, index) => ({
         ...item,
         show: index < LINE_COUNT || !collapsed,

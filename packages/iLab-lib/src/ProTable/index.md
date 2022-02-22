@@ -26,12 +26,14 @@ export default () => {
     {
       title: 'DateRange',
       dataIndex: 'dateRange',
+      order: 3,
       key: 'dateRange',
       search: true,
       valueType: 'dateRange',
     },
     {
       title: 'DateTime',
+      order: 2,
       dataIndex: 'date',
       key: 'date',
       search: true,
@@ -40,9 +42,11 @@ export default () => {
     {
       title: 'PersonName',
       dataIndex: 'personName',
+      order: 1,
       key: 'personName',
       search: true,
       fieldProps: {
+        label: '姓名',
         placeholder: '请输入 Name',
       },
       render: text => <a>{text}</a>,
@@ -51,6 +55,7 @@ export default () => {
     {
       title: 'Sex',
       dataIndex: 'sex',
+      order: 4,
       key: 'sex',
       search: true,
       valueType: 'select',
@@ -67,6 +72,7 @@ export default () => {
     {
       title: 'Status',
       dataIndex: 'status',
+      order: 5,
       key: 'status',
       search: true,
       valueType: 'select',
@@ -80,6 +86,7 @@ export default () => {
     },
     {
       title: 'Tree',
+      order: 6,
       dataIndex: 'tree',
       key: 'tree',
       search: true,
@@ -136,6 +143,7 @@ export default () => {
       title: 'Area',
       dataIndex: 'area',
       key: 'area',
+      order: 7,
       search: true,
       valueType: 'cascader',
       fieldProps: {
@@ -252,6 +260,15 @@ export default () => {
       dataIndex: 'id',
     },
     {
+      title: '姓名',
+      dataIndex: 'name',
+      order: 2,
+      search: true,
+      fieldProps: {
+        placeholder: '请输入姓名'
+      },
+    },
+    {
       title: '状态',
       dataIndex: 'status',
       search: true,
@@ -260,9 +277,10 @@ export default () => {
         label: '网络',
         placeholder: '请选择状态'
       },
+      order: 1,
       valueEnum: new Map([
-        [1, { text: 'online', status: 'success' }],
-        [2, { text: 'offline', status: 'error' }],
+        [1, { text: '在线', status: 'success' }],
+        [2, { text: '离线', status: 'error' }],
       ]),
     },
   ];
@@ -270,6 +288,7 @@ export default () => {
   const dataSource = new Array(40).fill('').map((_, index) => ({
     id: index,
     status: 1,
+    name: `mm-${index+1}`
   }));
 
   const toolbar = {

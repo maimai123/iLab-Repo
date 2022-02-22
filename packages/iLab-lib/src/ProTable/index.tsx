@@ -208,7 +208,7 @@ const ProTable = <RecordType extends object = any>(
     .filter(item => item.search)
     .filter(item => item.valueType !== 'option')
     .map(item => ({
-      label: item.title,
+      label: item.fieldProps?.label || item.title,
       name: item.dataIndex,
       valueType: item.valueType || 'text',
       valueEnum: item.valueEnum,
