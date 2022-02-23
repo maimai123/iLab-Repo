@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Table, Badge } from 'antd';
+import { Table, Badge, ConfigProvider } from 'antd';
 import { FormProps } from 'antd/lib/form';
 import { TableProps, ColumnProps } from 'antd/lib/table';
 import { SorterResult, Key } from 'antd/lib/table/interface';
@@ -7,6 +7,7 @@ import { PresetStatusColorType } from 'antd/lib/_util/colors';
 import { IProps as drawerProps } from '@/DrawerFilter';
 import { useHistory } from "react-router-dom"
 import classnames from 'classnames';
+import zhCN from 'antd/lib/locale/zh_CN';
 import moment from 'moment';
 import _ from 'lodash';
 import {
@@ -372,6 +373,7 @@ const ProTable = <RecordType extends object = any>(
   const isInvalidValue = (val: any) => val === undefined || val === null;
 
   return (
+    <ConfigProvider locale={zhCN}>
     <TableContext.Provider
       value={{
         id,
@@ -402,12 +404,19 @@ const ProTable = <RecordType extends object = any>(
         {/* 操作栏 */}
         {toolbar && <Toolbar {...toolbar} fields={fields} drawerProps={drawerProps} formProps={formProps} onSearch={onTableFilterSearch} onReset={onTableFilterReset}/>}
         {/* 表格 */}
+
         <Table
           className={classnames('iLab-pro-table-table', tableClassName)}
           style={tableStyle}
           columns={filterUnselectedColumns(tableColumns)}
           dataSource={list}
           loading={loading}
+          locale={{ emptyText: (
+            <div className="empty-container">
+              <img src={require(`@/assets/noData.png`)} />
+              <div>暂无数据</div>
+            </div>)
+          }}
           pagination={{
             ...pagination,
             current: page.current,
@@ -455,6 +464,7 @@ const ProTable = <RecordType extends object = any>(
         />
       </div>
     </TableContext.Provider>
+    </ConfigProvider>
   );
 };
 

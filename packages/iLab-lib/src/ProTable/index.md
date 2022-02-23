@@ -44,6 +44,7 @@ export default () => {
       dataIndex: 'personName',
       order: 1,
       key: 'personName',
+      width: 200,
       search: true,
       fieldProps: {
         label: '姓名',
@@ -54,6 +55,7 @@ export default () => {
     },
     {
       title: 'Sex',
+      width: 100,
       dataIndex: 'sex',
       order: 4,
       key: 'sex',
@@ -73,6 +75,7 @@ export default () => {
       title: 'Status',
       dataIndex: 'status',
       order: 5,
+      width: 100,
       key: 'status',
       search: true,
       valueType: 'select',
@@ -90,6 +93,7 @@ export default () => {
       dataIndex: 'tree',
       key: 'tree',
       search: true,
+      width: 100,
       valueType: 'treeSelect',
       fieldProps: {
         treeData: [
@@ -117,11 +121,13 @@ export default () => {
     {
       title: 'Address',
       dataIndex: 'address',
+      width: 100,
       key: 'address',
     },
     {
       title: 'Tags',
       key: 'tags',
+      width: 200,
       dataIndex: 'tags',
       render: tags => (
         <>
@@ -145,6 +151,7 @@ export default () => {
       key: 'area',
       order: 7,
       search: true,
+      width: 500,
       valueType: 'cascader',
       fieldProps: {
         options: [
@@ -166,7 +173,7 @@ export default () => {
       dataIndex: 'operate',
       key: 'operate',
       fixed: 'right',
-      width: 80,
+      width: 100,
     },
   ];
 
@@ -232,6 +239,7 @@ export default () => {
       rowKey="id"
       remember
       toolbar={toolbar}
+      scroll={{ x: 'max-content' }}
       formProps={{
         initialValues: {
           personName: 'asa',
@@ -250,6 +258,7 @@ export default () => {
 import React, { useRef } from 'react';
 import { ProTable } from 'ilab-lib';
 import { ActionType } from 'ilab-lib/lib/ProTable';
+// import axios from 'axios';
 import { Tag, Button, Space, Input } from 'antd';
 import moment from 'moment';
 
@@ -298,6 +307,8 @@ export default () => {
     showFilter: true
   };
 
+  // const getList = () => axios.get('https://randomuser.me/api');
+
   const actionRef = useRef<ActionType>();
 
   return (
@@ -305,7 +316,8 @@ export default () => {
       id='setting'
       actionRef={actionRef}
       columns={columns}
-      dataSource={dataSource}
+      // request={getList}
+      dataSource={[]}
       rowKey="id"
       toolbar={toolbar}
       formProps={{
