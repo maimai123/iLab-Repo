@@ -67,7 +67,7 @@ export interface ActionType {
 
 export interface ProTableProps<Column> extends TableProps<Column> {
   id?: string;
-  request: (
+  request?: (
     params: object,
     sort: {
       [key: string]: 'ascend' | 'descend';
