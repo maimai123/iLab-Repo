@@ -19,6 +19,7 @@ const Index = (props: IProps) => {
 
   const handleOk = () => {
     onOk &&
+    // @ts-ignore
       onOk(InputRef?.current?.state?.value)
     setVisible(false)
   }
