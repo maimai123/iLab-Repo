@@ -124,7 +124,7 @@ const ProTable = <RecordType extends object = any>(
     ...rest
   } = props;
   const history = useHistory()
-  const { pathname } = history.location
+  const pathname = history?.location?.pathname || window.location.pathname
   // loading 状态
   const [loading, setLoading] = useState<boolean>(false);
   // 表格字段
@@ -162,7 +162,7 @@ const ProTable = <RecordType extends object = any>(
 
   useEffect(() => {
     if (remember) {
-      UNLISTEN = history.listen((location: any) => {
+      UNLISTEN = history?.listen((location: any) => {
         if (!location.pathname.includes(pathname)) { // 跳转详情不清空page
           localStorage.removeItem(`${pathname}-${id}-Page`)
         }
