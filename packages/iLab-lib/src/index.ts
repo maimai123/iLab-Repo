@@ -7,3 +7,4 @@ export { default as TableFilter } from './TableFilter';
 export { default as ProTable } from './ProTable';
 export { default as FooterBar } from './FooterBar';
 export { default as CardDetail } from './CardDetail';
+export { default as ChangeInput } from './ChangeInput';

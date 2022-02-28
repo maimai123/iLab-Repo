@@ -51,7 +51,6 @@ export default () => {
         placeholder: '请输入 Name',
       },
       render: text => <a>{text}</a>,
-      sorter: (a, b) => a.personName.length - b.personName.length,
     },
     {
       title: 'Sex',
@@ -178,8 +177,8 @@ export default () => {
   ];
 
   const dataSource = new Array(40).fill('').map((_, index) => ({
-    id: index,
-    personName: 'name',
+    id: index+1,
+    personName: `name${index+1}`,
     sex: 1,
     status: 1,
     address: 'address',
