@@ -88,18 +88,18 @@ const TableFilter: React.FC<TableFilterProps> = ({
     switch (field.valueType) {
       case 'select':
         return field.valueEnum ? (
-          <Select options={field.valueEnum} {...field.fieldProps} />
+          <Select placeholder="请选择" options={field.valueEnum} {...field.fieldProps} />
         ) : null;
       case 'treeSelect':
-        return <TreeSelect {...field.fieldProps} />;
+        return <TreeSelect placeholder="请选择" {...field.fieldProps} />;
       case 'date':
-        return <DatePicker {...field.fieldProps} />;
+        return <DatePicker placeholder="请选择" {...field.fieldProps} />;
       case 'dateRange':
-        return <DateRangePicker {...field.fieldProps} />;
+        return <DateRangePicker placeholder={['开始时间', '结束时间']} {...field.fieldProps} />;
       case 'cascader':
         return <Cascader {...field.fieldProps} />;
       default:
-        return <Input {...field.fieldProps} />;
+        return <Input placeholder="请输入" {...field.fieldProps} />;
     }
   };
 
