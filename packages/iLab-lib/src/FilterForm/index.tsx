@@ -73,6 +73,7 @@ const FilterForm: React.ForwardRefRenderFunction<unknown, FilterFormProps> = (
   useImperativeHandle(parentRef, () => {
     return {
       ...form,
+      handleReset
     }
   })
 

@@ -40,6 +40,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   drawerProps,
   formProps,
   onSearch,
+  onReset,
 }) => {
   const { refresh = false, columnSetting = false } = options;
   const { loading, fetchData } = useContext(TableContext);
@@ -61,7 +62,14 @@ const Toolbar: React.FC<ToolbarProps> = ({
       <div className={'iLab-pro-table-toolbar-side-right'}>
           <Space className={'iLab-pro-table-toolbar-slot'}>
             {showFilter && fields
-            && <DrawerFilter options={fields} onChange={(values) => onSearch && onSearch(values)} formProps={formProps} {...drawerProps} />}
+              &&
+              <DrawerFilter
+                options={fields}
+                onSubmit={(values) => onSearch && onSearch(values)}
+                onReset={() => onReset && onReset()}
+                formProps={formProps}
+                {...drawerProps}
+              />}
             {slot}
           </Space>
         {showOptionsBar && (

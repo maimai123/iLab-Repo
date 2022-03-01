@@ -16,7 +16,8 @@ export interface IProps extends DrawerProps {
   filterProps?: FilterFormProps
   okText?: React.ReactNode
   cancelText?: React.ReactNode
-  onChange: (value: any) => void
+  onSubmit: (value: any) => void
+  onReset: () => void
   formProps?: FormProps;
   children?: React.ReactNode
 }
@@ -27,7 +28,8 @@ const Index: React.FC<IProps> = (props: IProps) => {
     width = 500,
     options,
     filterProps,
-    onChange,
+    onSubmit,
+    onReset,
     onClose,
     okText = '查询',
     cancelText = '重置',
@@ -43,16 +45,14 @@ const Index: React.FC<IProps> = (props: IProps) => {
     await formRef?.current?.validateFields()
     // @ts-ignore
     const fields = formRef?.current?.getFieldsValue() || {}
-    onChange(fields)
+    onSubmit && await onSubmit(fields)
     setVisible(false)
   }
 
   const handleReset = async () => {
     // @ts-ignore
-    formRef.current && (await formRef?.current?.resetFields())
-    // @ts-ignore
-    const fields = formRef?.current?.getFieldsValue() || {}
-    onChange(fields)
+    formRef.current && (await formRef?.current?.handleReset())
+    onReset && onReset()
     setVisible(false)
   }
 
@@ -61,6 +61,7 @@ const Index: React.FC<IProps> = (props: IProps) => {
       <Drawer
         title={title}
         width={width}
+        destroyOnClose
         closable={false}
         extra={<Icon className='drawer-close' type="icon-biaoge-quxiao" onClick={() => setVisible(false)} />}
         onClose={() => setVisible(false)}

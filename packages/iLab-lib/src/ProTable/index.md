@@ -236,13 +236,12 @@ export default () => {
       columns={columns}
       dataSource={dataSource}
       rowKey="id"
-      remember
       toolbar={toolbar}
       scroll={{ x: 'max-content' }}
       formProps={{
         initialValues: {
           personName: 'asa',
-          sex: 1
+          sex: 1,
         },
       }}
       formMode='static'
@@ -257,7 +256,6 @@ export default () => {
 import React, { useRef } from 'react';
 import { ProTable } from 'ilab-lib';
 import { ActionType } from 'ilab-lib/lib/ProTable';
-// import axios from 'axios';
 import { Tag, Button, Space, Input } from 'antd';
 import moment from 'moment';
 
@@ -306,8 +304,6 @@ export default () => {
     showFilter: true
   };
 
-  // const getList = () => axios.get('https://randomuser.me/api');
-
   const actionRef = useRef<ActionType>();
 
   return (
@@ -315,9 +311,9 @@ export default () => {
       id='setting'
       actionRef={actionRef}
       columns={columns}
-      // request={getList}
-      dataSource={[]}
+      dataSource={dataSource}
       rowKey="id"
+      remember
       toolbar={toolbar}
       formProps={{
         initialValues: {
@@ -351,7 +347,7 @@ tips: 开启表格右上角设置配置展示字段时，一个页面有多个�
 | defaultPagination | 默认分页方式                                                                    | `{ current: number, pageSize: number }`                             | `{ current: 1, pageSize: 10 }` |
 | formMode          | 搜索项展开的展示模式                                                            | `fixed` \| `static`                                                 | `fixed`                        |
 | defaultCollapsed  | 搜索表单默认收起状态                                                            | boolean                                                             | true                           |
-| remember | 是否记住分页，搜索字段（需要在详情页面配合）          | boolean           | false |
+| remember | 是否记住搜索参数和分页（需要在详情页面配合，详情的路由需包含列表路由）          | boolean           | false |
 | drawerProps           | 开启toolbar.showFilter后，透传抽屉组件配置  |    详情见DrawerFilter组件        | --      |
 | onFilterSearch    | 搜索回调                                                                        | (values: any) => void                                               | --                             |
 | onFilterReset     | 重置回调                                                                        | () => void                                                          | --                             |
@@ -373,6 +369,7 @@ useEffect(() => {
   UNLISTEN = history.listen((location: any) => {
     if (!pathname.includes(location.pathname)) { // 跳转到除列表页的其他页面清空localStorage
       localStorage.removeItem(`[列表页pathname]-[列表页table的id，默认为basic]-Page`)
+      localStorage.removeItem(`[列表页pathname]-[列表页table的id，默认为basic]-Params`)
     }
   })
   return () => {

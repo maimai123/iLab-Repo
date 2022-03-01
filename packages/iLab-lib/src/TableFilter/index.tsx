@@ -84,6 +84,11 @@ const TableFilter: React.FC<TableFilterProps> = ({
     }
   }, []);
 
+  useEffect(() => {
+    form.setFieldsValue(formProps?.initialValues || {})
+  }, [formProps?.initialValues])
+
+
   const matchItem = (field: IField) => {
     switch (field.valueType) {
       case 'select':
@@ -120,8 +125,8 @@ const TableFilter: React.FC<TableFilterProps> = ({
   };
 
   // 重置
-  const reset = () => {
-    form.resetFields();
+  const reset = async () => {
+    await form.resetFields();
     onReset && onReset();
   };
 

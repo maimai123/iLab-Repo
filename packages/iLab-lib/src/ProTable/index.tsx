@@ -165,10 +165,24 @@ const ProTable = <RecordType extends object = any>(
       UNLISTEN = history?.listen((location: any) => {
         if (!location.pathname.includes(pathname)) { // 跳转详情不清空page
           localStorage.removeItem(`${pathname}-${id}-Page`)
+          localStorage.removeItem(`${pathname}-${id}-Params`)
         }
       })
       const localPagination = getParamsStorage('Page')
+      const localParams = getParamsStorage('Params')
       setPage(localPagination && JSON.parse(localPagination) || defaultPagination)
+      // 设置搜索参数，默认根据localStorage取
+      const params = localParams && JSON.parse(localParams) || null
+      params && Object.keys(params).forEach(item => {
+        if (isDateFormat(params[item])) {
+          params[item] = moment(params[item])
+        } else if (Array.isArray(params[item]) && params[item].length > 1) {
+          if (isDateFormat(params[item][0])) {
+            params[item] = [moment(params[item][0]), moment(params[item][1])]
+          }
+        }
+      })
+      setFormData(params || formProps?.initialValues)
     }
     return () => {
       UNLISTEN && UNLISTEN()
@@ -199,10 +213,13 @@ const ProTable = <RecordType extends object = any>(
   }, [props]);
 
   // 存取Storage
-  const getParamsStorage = (type: string) => localStorage.getItem(`${pathname}-${id}-${type}`)
+  const getParamsStorage = (type: string) => remember && localStorage.getItem(`${pathname}-${id}-${type}`)
   const setParamsStorage = (type: string, param: {[x: string]: any}) => {
     remember && param && localStorage.setItem(`${pathname}-${id}-${type}`, JSON.stringify(param))
   }
+
+  // 是否为日期格式
+  const isDateFormat = (value: string) => isNaN(+value) && !isNaN(Date.parse(value))
 
   // 表单渲染字段
   const fields: IField[] = columns
@@ -301,6 +318,7 @@ const ProTable = <RecordType extends object = any>(
   // 获取数据
   const fetchData = async () => {
     const fetchParams = getFetchParams();
+    console.log('搜索参数', removeObjectNull(fetchParams));
     if (!request) return;
     setLoading(true)
     try {
@@ -322,8 +340,9 @@ const ProTable = <RecordType extends object = any>(
     if (onFilterSearch) {
       onFilterSearch(values);
     }
-    if (toolbar?.showFilter) setFormData(values)
     try {
+      setFormData(values)
+      setParamsStorage('Params', values)
       setParamsStorage('Page', { current: 1, pageSize: defaultPagination.pageSize })
       setPage({ current: 1, pageSize: defaultPagination.pageSize });
     } catch (err) {
@@ -336,8 +355,11 @@ const ProTable = <RecordType extends object = any>(
     if (onFilterReset) {
       onFilterReset();
     }
-    if (toolbar?.showFilter) setFormData({})
     try {
+      setFormData(formProps?.initialValues || {})
+      // 为了解决点击重置时需要点两下才清空的bug，强制reset
+      tableFilterRef?.current?.resetFields()
+      setParamsStorage('Params', formProps?.initialValues || {})
       setParamsStorage('Page', { current: 1, pageSize: defaultPagination.pageSize })
       setPage({ current: 1, pageSize: defaultPagination.pageSize });
     } catch (err) {
@@ -372,6 +394,11 @@ const ProTable = <RecordType extends object = any>(
   // 判断无效值
   const isInvalidValue = (val: any) => val === undefined || val === null;
 
+  const localFormProps = {
+    ...formProps,
+    initialValues: formData
+  }
+
   return (
     <ConfigProvider locale={zhCN}>
     <TableContext.Provider
@@ -395,14 +422,22 @@ const ProTable = <RecordType extends object = any>(
             fields={fields}
             onSearch={onTableFilterSearch}
             onReset={onTableFilterReset}
-            formProps={formProps}
+            formProps={localFormProps}
             mode={formMode}
             defaultCollapsed={defaultCollapsed}
             actionRef={tableFilterRef}
           />
         }
         {/* 操作栏 */}
-        {toolbar && <Toolbar {...toolbar} fields={fields} drawerProps={drawerProps} formProps={formProps} onSearch={onTableFilterSearch} onReset={onTableFilterReset}/>}
+        {toolbar
+          && <Toolbar
+            {...toolbar}
+            fields={fields}
+            drawerProps={drawerProps}
+            formProps={localFormProps}
+            onSearch={onTableFilterSearch}
+            onReset={onTableFilterReset}
+          />}
         {/* 表格 */}
 
         <Table
