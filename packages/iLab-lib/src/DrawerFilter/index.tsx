@@ -41,6 +41,7 @@ const Index: React.FC<IProps> = (props: IProps) => {
   const handleSubmit = async () => {
     // @ts-ignore
     await formRef?.current?.validateFields()
+    // @ts-ignore
     const fields = formRef?.current?.getFieldsValue() || {}
     onChange(fields)
     setVisible(false)
