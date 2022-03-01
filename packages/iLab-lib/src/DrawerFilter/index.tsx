@@ -38,8 +38,9 @@ const Index: React.FC<IProps> = (props: IProps) => {
   const formRef = useRef(null)
   const [visible, setVisible] = useState<boolean>(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // @ts-ignore
+    await formRef?.current?.validateFields()
     const fields = formRef?.current?.getFieldsValue() || {}
     onChange(fields)
     setVisible(false)
@@ -59,10 +60,12 @@ const Index: React.FC<IProps> = (props: IProps) => {
       <Drawer
         title={title}
         width={width}
+        closable={false}
+        extra={<Icon className='drawer-close' type="icon-biaoge-quxiao" onClick={() => setVisible(false)} />}
         onClose={() => setVisible(false)}
         visible={visible}
         footer={
-            <Space className="fr">
+            <Space className="drawer-fr">
             <Button onClick={handleReset}>{cancelText}</Button>
             <Button type="primary" onClick={handleSubmit}>
               {okText}
