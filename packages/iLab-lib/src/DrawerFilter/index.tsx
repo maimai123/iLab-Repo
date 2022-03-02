@@ -17,7 +17,7 @@ export interface IProps extends DrawerProps {
   okText?: React.ReactNode
   cancelText?: React.ReactNode
   onSubmit: (value: any) => void
-  onReset: () => void
+  onReset?: () => void
   formProps?: FormProps;
   children?: React.ReactNode
 }
