@@ -1,9 +1,9 @@
-import React, { useRef, useState, memo } from 'react'
+import React, { useRef, useEffect, useState, memo } from 'react'
 import { Drawer, Button, Space, FormItemProps, ColProps } from 'antd'
 import FilterForm from '../FilterForm'
 import Icon from '@/Icon'
 import { DrawerProps } from 'antd/lib/drawer'
-import { IField, FilterFormProps } from '../FilterForm'
+import { IField } from '../FilterForm'
 import { FormProps } from 'antd/lib/form';
 import './index.less'
 
@@ -11,15 +11,24 @@ export interface OptionsType extends FormItemProps {
   colProps?: ColProps
 }
 
+
 export interface IProps extends DrawerProps {
   options: IField[]
-  filterProps?: FilterFormProps
+  filterProps?: any
   okText?: React.ReactNode
   cancelText?: React.ReactNode
   onSubmit: (value: any) => void
   onReset?: () => void
+  actionRef?:
+    | React.MutableRefObject<ActionType | undefined>
+    | ((actionRef: ActionType) => void);
   formProps?: FormProps;
   children?: React.ReactNode
+}
+export interface ActionType {
+  getFieldsValue: () => any;
+  setFieldsValue: (val: any) => void;
+  resetFields: () => void;
 }
 
 const Index: React.FC<IProps> = (props: IProps) => {
@@ -31,6 +40,7 @@ const Index: React.FC<IProps> = (props: IProps) => {
     onSubmit,
     onReset,
     onClose,
+    actionRef,
     okText = '查询',
     cancelText = '重置',
     formProps,
@@ -39,14 +49,36 @@ const Index: React.FC<IProps> = (props: IProps) => {
   } = props
   const formRef = useRef(null)
   const [visible, setVisible] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const userAction: ActionType = {
+      // @ts-ignore
+      getFieldsValue: () => formRef?.current?.getFieldsValue(),
+      // @ts-ignore
+      setFieldsValue: val => formRef?.current?.setFieldsValue(val),
+      // @ts-ignore
+      resetFields: () => formRef?.current?.resetFields(),
+    };
+
+    if (actionRef && typeof actionRef !== 'function') {
+      actionRef.current = userAction;
+    }
+  }, []);
 
   const handleSubmit = async () => {
     // @ts-ignore
     await formRef?.current?.validateFields()
     // @ts-ignore
     const fields = formRef?.current?.getFieldsValue() || {}
-    onSubmit && await onSubmit(fields)
-    setVisible(false)
+    setLoading(true)
+    try {
+      onSubmit && await onSubmit(fields)
+      setVisible(false)
+      setLoading(false)
+    } catch (err) {
+      setLoading(false)
+    }
   }
 
   const handleReset = async () => {
@@ -69,7 +101,7 @@ const Index: React.FC<IProps> = (props: IProps) => {
         footer={
             <Space className="drawer-fr">
             <Button onClick={handleReset}>{cancelText}</Button>
-            <Button type="primary" onClick={handleSubmit}>
+            <Button type="primary" onClick={handleSubmit} loading={loading}>
               {okText}
             </Button>
           </Space>

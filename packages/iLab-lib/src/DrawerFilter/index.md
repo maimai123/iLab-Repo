@@ -44,19 +44,20 @@ export default () => {
   )
 };
 ```
-Demo: 自定义
+Demo: 自定义,可通过actionRef手动设置字段值, 如需等数据提交完成后关闭抽屉可使用promise返回，如下操作 3秒后关调抽屉
 
 ```tsx
-import React from 'react';
+import React, { useRef } from 'react';
 import { DrawerFilter } from 'ilab-lib';
 import { Input, Button } from 'antd';
+import { ActionType } from './index'
 
 export default () => {
+  const ref = useRef<ActionType>();
   const options = [
     {
       label: '姓名',
       name: 'name',
-      valueType: 'text',
       rules: [{ required: true, message: '请输入姓名' }],
     },
     {
@@ -64,16 +65,28 @@ export default () => {
       name: 'datetime',
       valueType: 'dateRange',
     },
+    {
+      label: '设置',
+      name: 'setting',
+      valueType: 'custom',
+      children: <Button onClick={() => ref.current.setFieldsValue({ setting: '我是手动设置的'})}>手动设置值</Button>
+    },
   ]
   return (
     <>
       <DrawerFilter
         options={options}
+        actionRef={ref}
         title="新增"
         okText="确定"
         cancelText="取消"
         onSubmit={(values) => {
           console.log(values)
+          return new Promise((r, j) => {
+            setTimeout(() => {
+              r()
+            }, 3000)
+          })
         }}
       >
         <Button>点击弹出</Button>
@@ -124,3 +137,25 @@ export default () => {
 | fieldProps | 透传给查询组件的属性                                                     | object                                              | -      |
 | order       | 筛选项权重，权重大的在前                                                 | number                                              | 0      |
 | -           | 其他属性同 [Form.Item](https://ant.design/components/form-cn/#Form.Item) |                                                     | -      |
+
+#### ActionRef 手动触发
+
+有时我们要手动触发 DrawerFilter 的 getFieldsValue 等操作，可以使用 actionRef，提供了一些操作来帮助我们更快的实现需求。
+
+```ts
+interface ActionType {
+  getFieldsValue: () => object;
+  setFieldsValue: (val: any) => void;
+  resetFields: () => void;
+}
+
+const ref = useRef<ActionType>();
+
+<DrawerFilter actionRef={ref} />;
+// 获取表单对象
+ref.current.getFieldsValue();
+// 设置表单内容
+ref.current.setFieldsValue(val);
+// 重置表单
+ref.current.resetFields();
+```
