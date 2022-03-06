@@ -452,14 +452,14 @@ const ProTable = <RecordType extends object = any>(
               <div>暂无数据</div>
             </div>)
           }}
-          pagination={{
+          pagination={pagination != false && {
             ...pagination,
             current: page.current,
             pageSize: page.pageSize,
             total,
             showQuickJumper: false,
             showSizeChanger: true,
-            showTotal: t => `共${t}条`,
+            showTotal: t => `共 ${t} 条`,
             onChange: handlePageChange,
             onShowSizeChange: handlePageSizeChange,
           }}

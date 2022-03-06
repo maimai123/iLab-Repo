@@ -253,13 +253,15 @@ export default () => {
 ### 筛选抽屉用法
 
 ```tsx
-import React, { useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { ProTable } from 'ilab-lib';
 import { ActionType } from 'ilab-lib/lib/ProTable';
-import { Tag, Button, Space, Input } from 'antd';
+import { Tag, Button, Space, Input, message } from 'antd';
 import moment from 'moment';
 
 export default () => {
+  const [selectedRows, setSelectedRows] = useState([]);
+
   const columns = [
     {
       title: 'ID',
@@ -301,7 +303,19 @@ export default () => {
     options: {
       columnSetting: true,
     },
+    slot:[<Button onClick={() => { message.info(`删除id为${selectedRows.join(',')}的数据`)}} disabled={selectedRows.length === 0}>删除</Button>],
     showFilter: true
+  };
+
+  const rowSelection = {
+    type: 'checkbox',
+    selectedRowKeys: selectedRows,
+    onChange: (keys) => {
+      setSelectedRows(keys)
+    },
+    getCheckboxProps: record => ({ // id为2的不可选
+      disabled: record.id === 2,
+    }),
   };
 
   const actionRef = useRef<ActionType>();
@@ -314,6 +328,8 @@ export default () => {
       dataSource={dataSource}
       rowKey="id"
       remember
+      // pagination={false}
+      rowSelection={rowSelection}
       toolbar={toolbar}
       formProps={{
         initialValues: {
