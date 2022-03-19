@@ -1,14 +1,15 @@
+import { Checkbox, Typography } from 'antd';
 import React, { useContext } from 'react';
-import { Checkbox, Button, Typography } from 'antd';
+
 import TableContext from '../../context';
+
 import './index.less';
 
 interface ColumnSettingProps {}
 
 const ColumnSetting: React.FC<ColumnSettingProps> = () => {
-  const { id, columns, selectedDataIndex, setSelectedDataIndex } = useContext(
-    TableContext,
-  );
+  const { id, columns, selectedDataIndex, setSelectedDataIndex } =
+    useContext(TableContext);
 
   return (
     <div className="iLab-pro-table-toolbar-column-setting">
@@ -18,8 +19,11 @@ const ColumnSetting: React.FC<ColumnSettingProps> = () => {
         </span>
         <Typography.Link
           onClick={() => {
-            localStorage.setItem(`${window.location.pathname}-${id}-Col`, columns.map(item => item.dataIndex).join())
-            setSelectedDataIndex(columns.map(item => item.dataIndex));
+            localStorage.setItem(
+              `${window.location.pathname}-${id}-Col`,
+              columns.map((item) => item.dataIndex).join(),
+            );
+            setSelectedDataIndex(columns.map((item) => item.dataIndex));
           }}
         >
           重置
@@ -27,16 +31,18 @@ const ColumnSetting: React.FC<ColumnSettingProps> = () => {
       </div>
       <div className="iLab-pro-table-toolbar-column-setting-body">
         <Checkbox.Group
-          options={columns.map(item => ({
+          options={columns.map((item) => ({
             label: item.title,
             value: item.dataIndex,
           }))}
           value={selectedDataIndex}
-          onChange={checkedValue => {
-            localStorage.setItem(`${window.location.pathname}-${id}-Col`, checkedValue.join())
-            setSelectedDataIndex(checkedValue as string[])
-            }
-          }
+          onChange={(checkedValue) => {
+            localStorage.setItem(
+              `${window.location.pathname}-${id}-Col`,
+              checkedValue.join(),
+            );
+            setSelectedDataIndex(checkedValue as string[]);
+          }}
         />
       </div>
     </div>

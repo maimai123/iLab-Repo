@@ -79,8 +79,11 @@ export default () => {
       search: true,
       valueType: 'select',
       valueEnum: new Map([
-        [1, { text: 'online', status: 'success' }],
-        [2, { text: 'offline', status: 'error' }],
+        [1, { text: '成功', status: 'success' }],
+        [2, { text: '失败', status: 'error' }],
+        [3, { text: '警报', status: 'warning' }],
+        [4, { text: '禁止', status: 'disable' }],
+        [5, { text: '阻止', status: 'stop' }],
       ]),
       fieldProps: {
         title: '网络'
@@ -124,27 +127,6 @@ export default () => {
       key: 'address',
     },
     {
-      title: 'Tags',
-      key: 'tags',
-      width: 200,
-      dataIndex: 'tags',
-      render: tags => (
-        <>
-          {tags.map(tag => {
-            let color = tag.length > 5 ? 'geekblue' : 'green';
-            if (tag === 'loser') {
-              color = 'volcano';
-            }
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
-    },
-    {
       title: 'Area',
       dataIndex: 'area',
       key: 'area',
@@ -180,7 +162,7 @@ export default () => {
     id: index+1,
     personName: `name${index+1}`,
     sex: 1,
-    status: 1,
+    status: index > 4 ? 1: index + 1,
     address: 'address',
     tags: ['tag1', 'tag2'],
     area: ['zhejiang'],
@@ -270,6 +252,7 @@ export default () => {
     {
       title: '姓名',
       dataIndex: 'name',
+      width: 200,
       order: 2,
       search: true,
       fieldProps: {
@@ -303,7 +286,7 @@ export default () => {
     options: {
       columnSetting: true,
     },
-    slot:[<Button onClick={() => { message.info(`删除id为${selectedRows.join(',')}的数据`)}} disabled={selectedRows.length === 0}>删除</Button>],
+    slot:[<Button key="del" onClick={() => { message.info(`删除id为${selectedRows.join(',')}的数据`)}} disabled={selectedRows.length === 0}>删除</Button>],
     showFilter: true
   };
 
@@ -427,6 +410,7 @@ type IValueEnum = Map<
   | {
       text: string;
       status: PresetStatusColorType;
+      color: React.ReactNode
     }
 >;
 ```

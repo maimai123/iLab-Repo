@@ -1,28 +1,33 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Table, Badge, ConfigProvider } from 'antd';
-import { FormProps } from 'antd/lib/form';
-import { TableProps, ColumnProps } from 'antd/lib/table';
-import { SorterResult, Key } from 'antd/lib/table/interface';
+import { Badge, ConfigProvider, Table } from 'antd';
 import { PresetStatusColorType } from 'antd/lib/_util/colors';
-import { IProps as drawerProps } from '@/DrawerFilter';
-import { useHistory } from "react-router-dom"
-import classnames from 'classnames';
+import { FormProps } from 'antd/lib/form';
 import zhCN from 'antd/lib/locale/zh_CN';
-import moment from 'moment';
+import Tag from '../Tag'
+import { ColumnProps, TableProps } from 'antd/lib/table';
+import { Key, SorterResult } from 'antd/lib/table/interface';
+import classnames from 'classnames';
 import _ from 'lodash';
-import {
-  DEFAULT_PAGINATION,
-  DEFAULT_DATE_TIME_FORMAT,
-  DEFAULT_EMPTY_VALUE,
-} from './constants';
-import TableContext from './context';
+import moment from 'moment';
+import React, { useEffect, useRef, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { Resizable, ResizeCallbackData } from 'react-resizable';
+
+import { IProps as drawerProp } from '@/DrawerFilter';
+
 import TableFilter, {
+  ActionType as TableFilterActionType,
   IField,
   ValueType as TableFilterValueType,
-  ActionType as TableFilterActionType,
 } from '../TableFilter';
-import Toolbar, { ToolbarProps } from './Toolbar';
 import { removeObjectNull } from '../utils';
+import {
+  DEFAULT_DATE_TIME_FORMAT,
+  DEFAULT_EMPTY_VALUE,
+  DEFAULT_PAGINATION,
+} from './constants';
+import TableContext from './context';
+import Toolbar, { ToolbarProps } from './Toolbar';
+
 import './index.less';
 
 export interface RequestData {
@@ -34,12 +39,13 @@ export interface RequestData {
 export type ValueType = TableFilterValueType | 'option';
 
 type IValueEnum = Map<
-  any,
-  | string
-  | {
-      text: string;
-      status: PresetStatusColorType;
-    }
+any,
+| string
+| {
+  text: string;
+  status: PresetStatusColorType;
+  icon?: React.ReactNode
+}
 >;
 
 interface IPagination {
@@ -65,6 +71,12 @@ export interface ActionType {
   resetFilter: () => void;
 }
 
+ConfigProvider.config({
+  theme: {
+    primaryColor: '#00A4F5',
+  },
+});
+
 export interface ProTableProps<Column> extends TableProps<Column> {
   id?: string;
   request?: (
@@ -85,16 +97,48 @@ export interface ProTableProps<Column> extends TableProps<Column> {
   formProps?: FormProps;
   toolbar?: ToolbarProps;
   actionRef?:
-    | React.MutableRefObject<ActionType | undefined>
-    | ((actionRef: ActionType) => void);
+  | React.MutableRefObject<ActionType | undefined>
+  | ((actionRef: ActionType) => void);
   defaultPagination?: IPagination;
   formMode?: 'fixed' | 'static';
   defaultCollapsed?: boolean;
-  drawerProps?: drawerProps; // 筛选组件
+  drawerProps?: drawerProp; // 筛选组件
   remember?: boolean; // 记住page功能
   onFilterSearch?: (values: any) => void;
   onFilterReset?: () => void;
 }
+interface TitleProps {
+  width: number;
+  onResize?: (e: React.SyntheticEvent<Element, Event>, data: ResizeCallbackData) => any;
+  [x: string]: any
+}
+// 可伸缩列
+const ResizableTitle = (props: TitleProps) => {
+  const { onResize, width, ...restProps } = props;
+
+  if (!width) {
+    return <th {...restProps} />;
+  }
+  return (
+    <Resizable
+      width={width}
+      height={0}
+      handle={
+        <span
+          className="react-resizable-handle"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        />
+          }
+      onResize={onResize}
+      draggableOpts={{ enableUserSelectHack: false }}
+    >
+      <th {...restProps} />
+    </Resizable>
+  );
+};
+
 
 const ProTable = <RecordType extends object = any>(
   props: ProTableProps<RecordType>,
@@ -123,13 +167,13 @@ const ProTable = <RecordType extends object = any>(
     onFilterReset,
     ...rest
   } = props;
-  const history = useHistory()
-  const pathname = history?.location?.pathname || window.location.pathname
+  const history = useHistory();
+  const pathname = history?.location?.pathname || window.location.pathname;
   // loading 状态
   const [loading, setLoading] = useState<boolean>(false);
   // 表格字段
   const [tableColumns, setTableColumns] = useState<
-    Array<ProColumn<RecordType>>
+  Array<ProColumn<RecordType>>
   >([]);
   // 选中列字段
   const [selectedDataIndex, setSelectedDataIndex] = useState<string[]>([]);
@@ -163,45 +207,52 @@ const ProTable = <RecordType extends object = any>(
   useEffect(() => {
     if (remember) {
       UNLISTEN = history?.listen((location: any) => {
-        if (!location.pathname.includes(pathname)) { // 跳转详情不清空page
-          localStorage.removeItem(`${pathname}-${id}-Page`)
-          localStorage.removeItem(`${pathname}-${id}-Params`)
+        if (!location.pathname.includes(pathname)) {
+          // 跳转详情不清空page
+          localStorage.removeItem(`${pathname}-${id}-Page`);
+          localStorage.removeItem(`${pathname}-${id}-Params`);
         }
-      })
-      const localPagination = getParamsStorage('Page')
-      const localParams = getParamsStorage('Params')
-      setPage(localPagination && JSON.parse(localPagination) || defaultPagination)
+      });
+      const localPagination = getParamsStorage('Page');
+      const localParams = getParamsStorage('Params');
+      setPage(
+        (localPagination && JSON.parse(localPagination)) || defaultPagination,
+      );
       // 设置搜索参数，默认根据localStorage取
-      const params = localParams && JSON.parse(localParams) || null
-      params && Object.keys(params).forEach(item => {
-        if (isDateFormat(params[item])) {
-          params[item] = moment(params[item])
-        } else if (Array.isArray(params[item]) && params[item].length > 1) {
-          if (isDateFormat(params[item][0])) {
-            params[item] = [moment(params[item][0]), moment(params[item][1])]
+      const sParams = (localParams && JSON.parse(localParams)) || null;
+      sParams &&
+        Object.keys(sParams).forEach((item) => {
+          if (isDateFormat(sParams[item])) {
+            sParams[item] = moment(sParams[item]);
+          } else if (Array.isArray(sParams[item]) && sParams[item].length > 1) {
+            if (isDateFormat(sParams[item][0])) {
+              sParams[item] = [
+                moment(sParams[item][0]),
+                moment(sParams[item][1]),
+              ];
+            }
           }
-        }
-      })
-      setFormData(params || formProps?.initialValues)
+        });
+      setFormData(sParams || formProps?.initialValues);
     }
     return () => {
-      UNLISTEN && UNLISTEN()
-    }
-  }, [])
+      UNLISTEN && UNLISTEN();
+    };
+  }, []);
 
   useEffect(() => {
     // 给 actionRef 方法赋值
     const userAction: ActionType = {
       reload: async (resetPageIndex?: boolean) => {
         if (resetPageIndex) {
-          setParamsStorage('Page', defaultPagination)
+          setParamsStorage('Page', defaultPagination);
           setPage(_.cloneDeep(defaultPagination));
         } else {
           await fetchData();
         }
       },
       getFilterValue: () => tableFilterRef.current?.getFieldsValue() || {},
-      setFilterValue: val => tableFilterRef.current?.setFieldsValue(val),
+      setFilterValue: (val) => tableFilterRef.current?.setFieldsValue(val),
       resetFilter: () => tableFilterRef.current?.resetFields(),
     };
     if (actionRef && typeof actionRef === 'function') {
@@ -213,19 +264,23 @@ const ProTable = <RecordType extends object = any>(
   }, [props]);
 
   // 存取Storage
-  const getParamsStorage = (type: string) => remember && localStorage.getItem(`${pathname}-${id}-${type}`)
-  const setParamsStorage = (type: string, param: {[x: string]: any}) => {
-    remember && param && localStorage.setItem(`${pathname}-${id}-${type}`, JSON.stringify(param))
-  }
+  const getParamsStorage = (type: string) =>
+    remember && localStorage.getItem(`${pathname}-${id}-${type}`);
+  const setParamsStorage = (type: string, param: { [x: string]: any }) => {
+    remember &&
+      param &&
+      localStorage.setItem(`${pathname}-${id}-${type}`, JSON.stringify(param));
+  };
 
   // 是否为日期格式
-  const isDateFormat = (value: string) => isNaN(+value) && !isNaN(Date.parse(value))
+  const isDateFormat = (value: string) =>
+    isNaN(+value) && !isNaN(Date.parse(value));
 
   // 表单渲染字段
   const fields: IField[] = columns
-    .filter(item => item.search)
-    .filter(item => item.valueType !== 'option')
-    .map(item => ({
+    .filter((item) => item.search)
+    .filter((item) => item.valueType !== 'option')
+    .map((item) => ({
       label: item.fieldProps?.label || item.title,
       name: item.dataIndex,
       valueType: item.valueType || 'text',
@@ -233,10 +288,10 @@ const ProTable = <RecordType extends object = any>(
       fieldProps: item.fieldProps,
       order: item.order,
     }))
-    .map(item => {
+    .map((item) => {
       const map = new Map();
       item.valueEnum &&
-        Array.from(item.valueEnum).forEach(e => {
+        Array.from(item.valueEnum).forEach((e) => {
           map.set(e[0], typeof e[1] === 'object' ? e[1].text : e[1]);
         });
       return {
@@ -246,12 +301,12 @@ const ProTable = <RecordType extends object = any>(
     });
 
   // 表格渲染字段
-  const formatColumns: <T>(
-    col: Array<ProColumn<T>>,
-  ) => Array<ProColumn<T>> = cols => {
+  const formatColumns: <T>(col: Array<ProColumn<T>>) => Array<ProColumn<T>> = (
+    cols,
+  ) => {
     const ret = cols
-      .filter(item => !item.hideInTable)
-      .map(item => {
+      .filter((item) => !item.hideInTable)
+      .map((item, index) => {
         // 如果存在自定义渲染方法，则优先执行
         if (item.render) return item;
         // 枚举值处理
@@ -262,7 +317,7 @@ const ProTable = <RecordType extends object = any>(
               const v = item.valueEnum!.get(value);
               if (isInvalidValue(v)) return DEFAULT_EMPTY_VALUE;
               if (typeof v === 'object') {
-                return <Badge status={v.status} text={v.text} />;
+                return <Tag status={v.status} text={v.text} icon={v?.icon}/>;
               }
               return v;
             },
@@ -273,35 +328,55 @@ const ProTable = <RecordType extends object = any>(
           return {
             ...item,
             render: (value: string) =>
-              isInvalidValue(value)
+              (isInvalidValue(value)
                 ? DEFAULT_EMPTY_VALUE
                 : moment(value).format(
-                    item.dateTimeFormat || DEFAULT_DATE_TIME_FORMAT,
-                  ),
+                  item.dateTimeFormat || DEFAULT_DATE_TIME_FORMAT,
+                )),
           };
         }
         return {
           ...item,
+          // onHeaderCell: (column: { width: any; }) => ({
+          //   width: column.width || 100,
+          //   onResize: handleResize(index),
+          // }),
           render: (value: any) =>
-            isInvalidValue(value) ? DEFAULT_EMPTY_VALUE : value,
+            (isInvalidValue(value) ? DEFAULT_EMPTY_VALUE : value),
         };
       });
     // 从localStorage取 || 全部选中
-    const resetColumn = getParamsStorage('Col') ? (getParamsStorage('Col') || '').split(',') : ret.map(item => item.dataIndex)
+    const resetColumn = getParamsStorage('Col')
+      ? (getParamsStorage('Col') || '').split(',')
+      : ret.map((item) => item.dataIndex);
     setSelectedDataIndex(resetColumn);
     return ret;
   };
 
+  const handleResize = (index: number) => (e, { size }) => {
+    const nextColumns = [...tableColumns];
+
+    nextColumns[index] = {
+      ...nextColumns[index],
+      width: size.width,
+    };
+
+    setTableColumns(nextColumns);
+  };
+
+
   // 过滤未选中字段
   const filterUnselectedColumns: <T>(
     col: Array<ProColumn<T>>,
-  ) => Array<ProColumn<T>> = cols =>
-    cols.filter(item => selectedDataIndex.includes(item.dataIndex));
+  ) => Array<ProColumn<T>> = (cols) =>
+    cols.filter((item) => selectedDataIndex.includes(item.dataIndex));
 
   // 格式化请求参数
   const getFetchParams = (obj: object = {}) => {
     // 获取查询条件
-    const query = toolbar?.showFilter ? formData : tableFilterRef.current?.getFieldsValue();
+    const query = toolbar?.showFilter
+      ? formData
+      : tableFilterRef.current?.getFieldsValue();
     const p = {
       ...query,
       current: page.current,
@@ -320,7 +395,7 @@ const ProTable = <RecordType extends object = any>(
     const fetchParams = getFetchParams();
     console.log('搜索参数', removeObjectNull(fetchParams));
     if (!request) return;
-    setLoading(true)
+    setLoading(true);
     try {
       const res = await request(fetchParams, proSort, proFilter);
       const { success, data, total: paginationTotal } = res;
@@ -328,10 +403,10 @@ const ProTable = <RecordType extends object = any>(
         setList(data || []);
         setTotal(paginationTotal || 0);
       }
-      setLoading(false)
+      setLoading(false);
     } catch (err) {
       console.log(err);
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -341,9 +416,12 @@ const ProTable = <RecordType extends object = any>(
       onFilterSearch(values);
     }
     try {
-      setFormData(values)
-      setParamsStorage('Params', values)
-      setParamsStorage('Page', { current: 1, pageSize: defaultPagination.pageSize })
+      setFormData(values);
+      setParamsStorage('Params', values);
+      setParamsStorage('Page', {
+        current: 1,
+        pageSize: defaultPagination.pageSize,
+      });
       setPage({ current: 1, pageSize: defaultPagination.pageSize });
     } catch (err) {
       console.log(err);
@@ -356,11 +434,14 @@ const ProTable = <RecordType extends object = any>(
       onFilterReset();
     }
     try {
-      setFormData(formProps?.initialValues || {})
+      setFormData(formProps?.initialValues || {});
       // 为了解决点击重置时需要点两下才清空的bug，强制reset
-      tableFilterRef?.current?.resetFields()
-      setParamsStorage('Params', formProps?.initialValues || {})
-      setParamsStorage('Page', { current: 1, pageSize: defaultPagination.pageSize })
+      tableFilterRef?.current?.resetFields();
+      setParamsStorage('Params', formProps?.initialValues || {});
+      setParamsStorage('Page', {
+        current: 1,
+        pageSize: defaultPagination.pageSize,
+      });
       setPage({ current: 1, pageSize: defaultPagination.pageSize });
     } catch (err) {
       console.log(err);
@@ -372,7 +453,7 @@ const ProTable = <RecordType extends object = any>(
     current: number,
     pageSize: number = defaultPagination.pageSize,
   ) => {
-    setParamsStorage('Page', { current, pageSize })
+    setParamsStorage('Page', { current, pageSize });
     setPage({
       current,
       pageSize,
@@ -384,7 +465,7 @@ const ProTable = <RecordType extends object = any>(
     setParamsStorage('Page', {
       current,
       pageSize: size,
-    })
+    });
     setPage({
       current,
       pageSize: size,
@@ -396,109 +477,128 @@ const ProTable = <RecordType extends object = any>(
 
   const localFormProps = {
     ...formProps,
-    initialValues: formData
-  }
+    initialValues: formData,
+  };
 
   return (
     <ConfigProvider locale={zhCN}>
-    <TableContext.Provider
-      value={{
-        id,
-        loading,
-        setLoading,
-        columns: tableColumns,
-        setColumns: setTableColumns,
-        selectedDataIndex,
-        setSelectedDataIndex,
-        fetchData,
-      }}
-    >
-      <div id={id} className={classnames("iLab-pro-table", className)} style={style}>
-        {/* 搜索表单 默认展示搜索表单 toolbar showFilter开启则不展示 */}
-        {
-          !toolbar?.showFilter && <TableFilter
-            className={classnames('iLab-pro-table-filter', formClassName)}
-            style={formStyle}
-            fields={fields}
-            onSearch={onTableFilterSearch}
-            onReset={onTableFilterReset}
-            formProps={localFormProps}
-            mode={formMode}
-            defaultCollapsed={defaultCollapsed}
-            actionRef={tableFilterRef}
+      <TableContext.Provider
+        value={{
+          id,
+          loading,
+          setLoading,
+          columns: tableColumns,
+          setColumns: setTableColumns,
+          selectedDataIndex,
+          setSelectedDataIndex,
+          fetchData,
+        }}
+      >
+        <div
+          id={id}
+          className={classnames('iLab-pro-table', className)}
+          style={style}
+        >
+          {/* 搜索表单 默认展示搜索表单 toolbar showFilter开启则不展示 */}
+          {!toolbar?.showFilter && (
+            <TableFilter
+              className={classnames('iLab-pro-table-filter', formClassName)}
+              style={formStyle}
+              fields={fields}
+              onSearch={onTableFilterSearch}
+              onReset={onTableFilterReset}
+              formProps={localFormProps}
+              mode={formMode}
+              defaultCollapsed={defaultCollapsed}
+              actionRef={tableFilterRef}
+            />
+          )}
+          {/* 操作栏 */}
+          {toolbar && (
+            <Toolbar
+              {...toolbar}
+              fields={fields}
+              drawerProps={drawerProps}
+              formProps={localFormProps}
+              onSearch={onTableFilterSearch}
+              onReset={onTableFilterReset}
+            />
+          )}
+          {/* 表格 */}
+
+          <Table
+            className={classnames('iLab-pro-table-table', tableClassName)}
+            style={tableStyle}
+            columns={filterUnselectedColumns(tableColumns)}
+            components={{
+              header: {
+                cell: ResizableTitle,
+              },
+            }}
+            dataSource={list}
+            loading={loading}
+            locale={{
+              emptyText: (
+                <div className="empty-container">
+                  <img src={require('@/assets/noData.png')} />
+                  <div>暂无数据</div>
+                </div>
+              ),
+            }}
+            rowClassName={(record, index) => {
+              return (index % 2 === 1 && 'light-row') || '';
+            }}
+            pagination={
+              pagination != false && {
+                ...pagination,
+                current: page.current,
+                pageSize: page.pageSize,
+                total,
+                showQuickJumper: false,
+                showSizeChanger: true,
+                showTotal: (t) => `共 ${t} 条`,
+                onChange: handlePageChange,
+                onShowSizeChange: handlePageSizeChange,
+              }
+            }
+            onChange={(
+              changePagination,
+              filters: Record<string, Array<Key | boolean> | null>,
+              sorter:
+              | SorterResult<RecordType>
+              | Array<SorterResult<RecordType>>,
+              extra,
+            ) => {
+              if (rest.onChange) {
+                rest.onChange(changePagination, filters, sorter, extra);
+              }
+              // 制造筛选的数据
+              setProFilter(removeObjectNull(filters));
+
+              // 修改排序字段及排序方式
+              if (Array.isArray(sorter)) {
+                const data = sorter.reduce<{
+                  [key: string]: any;
+                }>((pre, value) => {
+                  if (!value.order) {
+                    return pre;
+                  }
+                  return {
+                    ...pre,
+                    [`${value.field}`]: value.order,
+                  };
+                }, {});
+                setProSort(data);
+              } else if (sorter.order) {
+                setProSort({ [`${sorter.field}`]: sorter.order });
+              } else {
+                setProSort({});
+              }
+            }}
+            {...rest}
           />
-        }
-        {/* 操作栏 */}
-        {toolbar
-          && <Toolbar
-            {...toolbar}
-            fields={fields}
-            drawerProps={drawerProps}
-            formProps={localFormProps}
-            onSearch={onTableFilterSearch}
-            onReset={onTableFilterReset}
-          />}
-        {/* 表格 */}
-
-        <Table
-          className={classnames('iLab-pro-table-table', tableClassName)}
-          style={tableStyle}
-          columns={filterUnselectedColumns(tableColumns)}
-          dataSource={list}
-          loading={loading}
-          locale={{ emptyText: (
-            <div className="empty-container">
-              <img src={require(`@/assets/noData.png`)} />
-              <div>暂无数据</div>
-            </div>)
-          }}
-          pagination={pagination != false && {
-            ...pagination,
-            current: page.current,
-            pageSize: page.pageSize,
-            total,
-            showQuickJumper: false,
-            showSizeChanger: true,
-            showTotal: t => `共 ${t} 条`,
-            onChange: handlePageChange,
-            onShowSizeChange: handlePageSizeChange,
-          }}
-          onChange={(
-            changePagination,
-            filters: Record<string, Array<Key | boolean> | null>,
-            sorter: SorterResult<RecordType> | Array<SorterResult<RecordType>>,
-            extra,
-          ) => {
-            if (rest.onChange) {
-              rest.onChange(changePagination, filters, sorter, extra);
-            }
-            // 制造筛选的数据
-            setProFilter(removeObjectNull(filters));
-
-            // 修改排序字段及排序方式
-            if (Array.isArray(sorter)) {
-              const data = sorter.reduce<{
-                [key: string]: any;
-              }>((pre, value) => {
-                if (!value.order) {
-                  return pre;
-                }
-                return {
-                  ...pre,
-                  [`${value.field}`]: value.order,
-                };
-              }, {});
-              setProSort(data);
-            } else if (sorter.order) {
-              setProSort({ [`${sorter.field}`]: sorter.order });
-            } else {
-              setProSort({});
-            }
-          }}
-          {...rest}
-        />
-      </div>
-    </TableContext.Provider>
+        </div>
+      </TableContext.Provider>
     </ConfigProvider>
   );
 };

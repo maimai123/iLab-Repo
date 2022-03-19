@@ -1,0 +1,46 @@
+@import '../styles/index.less';
+
+.iLab-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  line-height: 20px;
+  padding: 1px 6px;
+  border: 1px solid;
+  border-radius: 4px;
+
+  > span {
+    margin-right: 4px;
+  }
+
+  &_success {
+    border-color: #26b545;
+    color: #26b545;
+    background-color: #edfff1;
+  }
+  &_error {
+    border-color: #e16262;
+    color: #e16262;
+    background-color: #fff2f2;
+  }
+  &_warning {
+    border-color: #ea9505;
+    color: #ea9505;
+    background-color: #ffefd3;
+  }
+  &_stop {
+    border-color: #700fd3;
+    color: #700fd3;
+    background-color: #f3e7ff;
+  }
+  &_disable {
+    border-color: #697c88;
+    color: #697c88;
+    background-color: #ebf0f3;
+  }
+}
+
+.iLab-tag + .iLab-tag {
+  margin-left: 8px;
+}
