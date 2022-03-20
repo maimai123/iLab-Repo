@@ -2,7 +2,7 @@ import { Badge, ConfigProvider, Table } from 'antd';
 import { PresetStatusColorType } from 'antd/lib/_util/colors';
 import { FormProps } from 'antd/lib/form';
 import zhCN from 'antd/lib/locale/zh_CN';
-import Tag from '../Tag'
+import Tag from '../Tag';
 import { ColumnProps, TableProps } from 'antd/lib/table';
 import { Key, SorterResult } from 'antd/lib/table/interface';
 import classnames from 'classnames';
@@ -44,7 +44,7 @@ any,
 | {
   text: string;
   status: PresetStatusColorType;
-  icon?: React.ReactNode
+  icon?: React.ReactNode;
 }
 >;
 
@@ -110,7 +110,7 @@ export interface ProTableProps<Column> extends TableProps<Column> {
 interface TitleProps {
   width: number;
   onResize?: (e: React.SyntheticEvent<Element, Event>, data: ResizeCallbackData) => any;
-  [x: string]: any
+  [x: string]: any;
 }
 // 可伸缩列
 const ResizableTitle = (props: TitleProps) => {
@@ -206,6 +206,7 @@ const ProTable = <RecordType extends object = any>(
 
   useEffect(() => {
     if (remember) {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       UNLISTEN = history?.listen((location: any) => {
         if (!location.pathname.includes(pathname)) {
           // 跳转详情不清空page
@@ -306,7 +307,7 @@ const ProTable = <RecordType extends object = any>(
   ) => {
     const ret = cols
       .filter((item) => !item.hideInTable)
-      .map((item, index) => {
+      .map((item) => {
         // 如果存在自定义渲染方法，则优先执行
         if (item.render) return item;
         // 枚举值处理
@@ -317,7 +318,7 @@ const ProTable = <RecordType extends object = any>(
               const v = item.valueEnum!.get(value);
               if (isInvalidValue(v)) return DEFAULT_EMPTY_VALUE;
               if (typeof v === 'object') {
-                return <Tag status={v.status} text={v.text} icon={v?.icon}/>;
+                return <Tag status={v.status} text={v.text} icon={v?.icon} />;
               }
               return v;
             },
@@ -337,10 +338,6 @@ const ProTable = <RecordType extends object = any>(
         }
         return {
           ...item,
-          // onHeaderCell: (column: { width: any; }) => ({
-          //   width: column.width || 100,
-          //   onResize: handleResize(index),
-          // }),
           render: (value: any) =>
             (isInvalidValue(value) ? DEFAULT_EMPTY_VALUE : value),
         };
@@ -352,24 +349,6 @@ const ProTable = <RecordType extends object = any>(
     setSelectedDataIndex(resetColumn);
     return ret;
   };
-
-  const handleResize = (index: number) => (e, { size }) => {
-    const nextColumns = [...tableColumns];
-
-    nextColumns[index] = {
-      ...nextColumns[index],
-      width: size.width,
-    };
-
-    setTableColumns(nextColumns);
-  };
-
-
-  // 过滤未选中字段
-  const filterUnselectedColumns: <T>(
-    col: Array<ProColumn<T>>,
-  ) => Array<ProColumn<T>> = (cols) =>
-    cols.filter((item) => selectedDataIndex.includes(item.dataIndex));
 
   // 格式化请求参数
   const getFetchParams = (obj: object = {}) => {
@@ -393,7 +372,7 @@ const ProTable = <RecordType extends object = any>(
   // 获取数据
   const fetchData = async () => {
     const fetchParams = getFetchParams();
-    console.log('搜索参数', removeObjectNull(fetchParams));
+    // console.log('搜索参数', removeObjectNull(fetchParams));
     if (!request) return;
     setLoading(true);
     try {
@@ -480,6 +459,25 @@ const ProTable = <RecordType extends object = any>(
     initialValues: formData,
   };
 
+  const handleResize = (index: number) => (e: any, { size }: any) => {
+    const nextColumns = [...tableColumns];
+    nextColumns[index] = {
+      ...nextColumns[index],
+      width: size.width,
+    };
+    setTableColumns(nextColumns);
+  };
+
+  const resetColumn = tableColumns.map((col: any, index: any) => {
+    return {
+      ...col,
+      onHeaderCell: (column: any) => ({
+        width: column.width,
+        onResize: handleResize(index),
+      }),
+    };
+  }).filter((item) => selectedDataIndex.includes(item.dataIndex)); // 过滤setting中没选中的字段
+
   return (
     <ConfigProvider locale={zhCN}>
       <TableContext.Provider
@@ -529,7 +527,7 @@ const ProTable = <RecordType extends object = any>(
           <Table
             className={classnames('iLab-pro-table-table', tableClassName)}
             style={tableStyle}
-            columns={filterUnselectedColumns(tableColumns)}
+            columns={resetColumn}
             components={{
               header: {
                 cell: ResizableTitle,
