@@ -44,8 +44,8 @@ export interface TableFilterProps {
   className?: string;
   style?: React.CSSProperties;
   actionRef?:
-    | React.MutableRefObject<ActionType | undefined>
-    | ((actionRef: ActionType) => void);
+  | React.MutableRefObject<ActionType | undefined>
+  | ((actionRef: ActionType) => void);
   mode?: 'fixed' | 'static';
   defaultCollapsed?: boolean;
 }
@@ -75,7 +75,7 @@ const TableFilter: React.FC<TableFilterProps> = ({
   useEffect(() => {
     const userAction: ActionType = {
       getFieldsValue: () => form.getFieldsValue(),
-      setFieldsValue: val => form.setFieldsValue(val),
+      setFieldsValue: (val) => form.setFieldsValue(val),
       resetFields: () => form.resetFields(),
     };
 
@@ -85,8 +85,8 @@ const TableFilter: React.FC<TableFilterProps> = ({
   }, []);
 
   useEffect(() => {
-    form.setFieldsValue(formProps?.initialValues || {})
-  }, [formProps?.initialValues])
+    form.setFieldsValue(formProps?.initialValues || {});
+  }, [formProps?.initialValues]);
 
 
   const matchItem = (field: IField) => {
@@ -151,7 +151,7 @@ const TableFilter: React.FC<TableFilterProps> = ({
         {...formProps}
       >
         <Row gutter={GUTTER}>
-          {renderFields(fields).map(filed => {
+          {renderFields(fields).map((filed) => {
             const {
               valueEnum,
               valueType,
@@ -174,7 +174,7 @@ const TableFilter: React.FC<TableFilterProps> = ({
             <Form.Item
               label=" "
               noStyle={
-                renderFields(fields).filter(item => item.show).length %
+                renderFields(fields).filter((item) => item.show).length %
                   (LINE_COUNT + 1) ===
                 0
               }

@@ -1,20 +1,20 @@
 import React from 'react';
 import { Card, Descriptions, Divider } from 'antd';
-import { CardProps } from 'antd/lib/card'
-import { DescriptionsProps } from 'antd/lib/Descriptions'
+import { CardProps } from 'antd/lib/card';
+import { DescriptionsProps } from 'antd/lib/Descriptions';
 import classnames from 'classnames';
 
 import './index.less';
 
 interface Item {
   label: React.ReactNode;
-  value: React.ReactNode
+  value: React.ReactNode;
 }
 
 export interface ICardDetailProps extends CardProps {
-  list?: Item[]
-  column?: number
-  listProps?: DescriptionsProps
+  list?: Item[];
+  column?: number;
+  listProps?: DescriptionsProps;
 }
 
 export default function CardDetail(props: ICardDetailProps) {

@@ -252,9 +252,25 @@ const ProTable = <RecordType extends object = any>(
           await fetchData();
         }
       },
-      getFilterValue: () => tableFilterRef.current?.getFieldsValue() || {},
-      setFilterValue: (val) => tableFilterRef.current?.setFieldsValue(val),
-      resetFilter: () => tableFilterRef.current?.resetFields(),
+      getFilterValue: () => (toolbar?.showFilter
+        ? removeObjectNull(formData) : tableFilterRef.current?.getFieldsValue() || {}),
+      setFilterValue: (val) => {
+        if (toolbar?.showFilter) {
+          setFormData({
+            ...formData,
+            ...val,
+          });
+        } else {
+          tableFilterRef.current?.setFieldsValue(val);
+        }
+      },
+      resetFilter: () => {
+        if (toolbar?.showFilter) { // 抽屉式筛选
+          setFormData(formProps?.initialValues || {});
+        } else {
+          tableFilterRef.current?.resetFields();
+        }
+      },
     };
     if (actionRef && typeof actionRef === 'function') {
       actionRef(userAction);
@@ -262,7 +278,7 @@ const ProTable = <RecordType extends object = any>(
     if (actionRef && typeof actionRef !== 'function') {
       actionRef.current = userAction;
     }
-  }, [props]);
+  }, [props, formData]);
 
   // 存取Storage
   const getParamsStorage = (type: string) =>
@@ -523,7 +539,6 @@ const ProTable = <RecordType extends object = any>(
             />
           )}
           {/* 表格 */}
-
           <Table
             className={classnames('iLab-pro-table-table', tableClassName)}
             style={tableStyle}

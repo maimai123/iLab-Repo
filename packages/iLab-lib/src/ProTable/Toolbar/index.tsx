@@ -1,7 +1,7 @@
 import { Popover, Space } from 'antd';
 import { FormProps } from 'antd/lib/form';
 import classnames from 'classnames';
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
 
 import Icon from '@/Icon';
 
@@ -31,19 +31,19 @@ export interface ToolbarProps {
   onReset?: () => void;
 }
 
-const Toolbar: React.FC<ToolbarProps> = ({
-  className,
-  style,
-  actions,
-  options = {},
-  slot,
-  showFilter,
-  fields,
-  drawerProps,
-  formProps,
-  onSearch,
-  onReset,
-}) => {
+const Toolbar: React.FC<ToolbarProps> = (props) => {
+  const { className,
+    style,
+    actions,
+    options = {},
+    slot,
+    showFilter,
+    fields,
+    drawerProps,
+    formProps,
+    onSearch,
+    onReset } = props;
+  const ref = useRef<any>();
   const { refresh = false, columnSetting = false } = options;
   const { loading, fetchData } = useContext(TableContext);
 

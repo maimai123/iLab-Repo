@@ -1,29 +1,28 @@
-import React, { useRef, useEffect, useState, memo } from 'react'
-import { Drawer, Button, Space, FormItemProps, ColProps } from 'antd'
-import FilterForm from '../FilterForm'
-import Icon from '@/Icon'
-import { DrawerProps } from 'antd/lib/drawer'
-import { IField } from '../FilterForm'
+import React, { useRef, useEffect, useState, memo } from 'react';
+import { Drawer, Button, Space, FormItemProps, ColProps } from 'antd';
+import FilterForm, { IField } from '../FilterForm';
+import Icon from '@/Icon';
+import { DrawerProps } from 'antd/lib/drawer';
 import { FormProps } from 'antd/lib/form';
-import './index.less'
+import './index.less';
 
 export interface OptionsType extends FormItemProps {
-  colProps?: ColProps
+  colProps?: ColProps;
 }
 
 
 export interface IProps extends DrawerProps {
-  options: IField[]
-  filterProps?: any
-  okText?: React.ReactNode
-  cancelText?: React.ReactNode
-  onSubmit: (value: any) => void
-  onReset?: () => void
+  options: IField[];
+  filterProps?: any;
+  okText?: React.ReactNode;
+  cancelText?: React.ReactNode;
+  onSubmit: (value: any) => void;
+  onReset?: () => void;
   actionRef?:
-    | React.MutableRefObject<ActionType | undefined>
-    | ((actionRef: ActionType) => void);
+  | React.MutableRefObject<ActionType | undefined>
+  | ((actionRef: ActionType) => void);
   formProps?: FormProps;
-  children?: React.ReactNode
+  children?: React.ReactNode;
 }
 export interface ActionType {
   getFieldsValue: () => any;
@@ -46,8 +45,8 @@ const Index: React.FC<IProps> = (props: IProps) => {
     formProps,
     children = <Button><Icon type={'icon-biaoge-shaixuan1'} />筛选</Button>,
     ...rest
-  } = props
-  const formRef = useRef(null)
+  } = props;
+  const formRef = useRef(null);
   const [visible, setVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -56,7 +55,7 @@ const Index: React.FC<IProps> = (props: IProps) => {
       // @ts-ignore
       getFieldsValue: () => formRef?.current?.getFieldsValue(),
       // @ts-ignore
-      setFieldsValue: val => formRef?.current?.setFieldsValue(val),
+      setFieldsValue: (val) => formRef?.current?.setFieldsValue(val),
       // @ts-ignore
       resetFields: () => formRef?.current?.resetFields(),
     };
@@ -68,25 +67,25 @@ const Index: React.FC<IProps> = (props: IProps) => {
 
   const handleSubmit = async () => {
     // @ts-ignore
-    await formRef?.current?.validateFields()
+    await formRef?.current?.validateFields();
     // @ts-ignore
-    const fields = formRef?.current?.getFieldsValue() || {}
-    setLoading(true)
+    const fields = formRef?.current?.getFieldsValue() || {};
+    setLoading(true);
     try {
-      onSubmit && await onSubmit(fields)
-      setVisible(false)
-      setLoading(false)
+      onSubmit && await onSubmit(fields);
+      setVisible(false);
+      setLoading(false);
     } catch (err) {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleReset = async () => {
     // @ts-ignore
-    formRef.current && (await formRef?.current?.handleReset())
-    onReset && onReset()
-    setVisible(false)
-  }
+    formRef.current && (await formRef?.current?.handleReset());
+    onReset && onReset();
+    setVisible(false);
+  };
 
   return (
     <>
@@ -95,11 +94,11 @@ const Index: React.FC<IProps> = (props: IProps) => {
         width={width}
         destroyOnClose
         closable={false}
-        extra={<Icon className='drawer-close' type="icon-biaoge-quxiao" onClick={() => setVisible(false)} />}
+        extra={<Icon className="drawer-close" type="icon-biaoge-quxiao" onClick={() => setVisible(false)} />}
         onClose={() => setVisible(false)}
         visible={visible}
         footer={
-            <Space className="drawer-fr">
+          <Space className="drawer-fr">
             <Button onClick={handleReset}>{cancelText}</Button>
             <Button type="primary" onClick={handleSubmit} loading={loading}>
               {okText}
@@ -119,6 +118,6 @@ const Index: React.FC<IProps> = (props: IProps) => {
         {children}
       </div>
     </>
-  )
-}
-export default memo(Index)
+  );
+};
+export default memo(Index);

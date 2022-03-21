@@ -1,6 +1,6 @@
-import React, { forwardRef, useImperativeHandle } from 'react'
-import { Row, Col, Form, Button, Space, FormProps, FormItemProps, RowProps, ColProps } from 'antd'
-import classnames from 'classnames'
+import React, { forwardRef, useImperativeHandle } from 'react';
+import { Row, Col, Form, Button, Space, FormProps, FormItemProps, RowProps, ColProps } from 'antd';
+import classnames from 'classnames';
 import Select from '../TableFilter/Select';
 import TreeSelect from '../TableFilter/TreeSelect';
 import Input from '../TableFilter/Input';
@@ -8,7 +8,7 @@ import DatePicker from '../TableFilter/DatePicker';
 import DateRangePicker from '../TableFilter/DateRangePicker';
 import Cascader from '../TableFilter/Cascader';
 
-import './index.less'
+import './index.less';
 
 export type valueType =
   | 'text'
@@ -37,22 +37,22 @@ export interface IField extends FormItemProps {
 }
 
 export interface FilterFormProps {
-  className?: string
-  style?: React.CSSProperties
-  formProps?: FormProps
-  rowProps?: RowProps
-  colProps?: ColProps
-  options: IField[]
-  column?: number // 一行几个
-  showAction?: boolean // 是否展示默认操作按钮
+  className?: string;
+  style?: React.CSSProperties;
+  formProps?: FormProps;
+  rowProps?: RowProps;
+  colProps?: ColProps;
+  options: IField[];
+  column?: number; // 一行几个
+  showAction?: boolean; // 是否展示默认操作按钮
   onSearch?: (values: any) => void;
-  onReset?: () => void
-  renderCustomAction?: () => React.ReactNode
+  onReset?: () => void;
+  renderCustomAction?: () => React.ReactNode;
 }
 
 const FilterForm: React.ForwardRefRenderFunction<unknown, FilterFormProps> = (
   props: FilterFormProps,
-  parentRef
+  parentRef,
 ) => {
   const {
     className,
@@ -66,18 +66,18 @@ const FilterForm: React.ForwardRefRenderFunction<unknown, FilterFormProps> = (
     onSearch,
     onReset,
     showAction = false, // 是否显示操作组，默认不显示
-  } = props
+  } = props;
 
-  const [form] = Form.useForm()
+  const [form] = Form.useForm();
 
   useImperativeHandle(parentRef, () => {
     return {
       ...form,
-      handleReset
-    }
-  })
+      handleReset,
+    };
+  });
 
-  const defaultSpan = 24 / column
+  const defaultSpan = 24 / column;
 
   const matchItem = (field: IField) => {
     switch (field.valueType) {
@@ -86,13 +86,13 @@ const FilterForm: React.ForwardRefRenderFunction<unknown, FilterFormProps> = (
           <Select placeholder="请选择" options={field.valueEnum} {...field.fieldProps} />
         ) : null;
       case 'treeSelect':
-        return <TreeSelect placeholder="请选择" {...field.fieldProps} />;
+        return <TreeSelect style={{ width: '100%' }} placeholder="请选择" {...field.fieldProps} />;
       case 'date':
-        return <DatePicker placeholder="请选择" {...field.fieldProps} />;
+        return <DatePicker style={{ width: '100%' }} placeholder="请选择" {...field.fieldProps} />;
       case 'dateRange':
-        return <DateRangePicker placeholder={['开始时间', '结束时间']} {...field.fieldProps} />;
+        return <DateRangePicker style={{ width: '100%' }} placeholder={['开始时间', '结束时间']} {...field.fieldProps} />;
       case 'cascader':
-        return <Cascader placeholder="请选择"  {...field.fieldProps} />;
+        return <Cascader style={{ width: '100%' }} placeholder="请选择" {...field.fieldProps} />;
       case 'custom':
         return field.children;
       default:
@@ -101,20 +101,20 @@ const FilterForm: React.ForwardRefRenderFunction<unknown, FilterFormProps> = (
   };
 
   const handleReset = () => {
-    form.resetFields()
+    form.resetFields();
     if (onReset) {
-      onReset()
+      onReset();
     } else if (formProps?.onFinish) {
-      const fields = form.getFieldsValue()
-      formProps?.onFinish && formProps?.onFinish(fields)
+      const fields = form.getFieldsValue();
+      formProps?.onFinish && formProps?.onFinish(fields);
     }
-  }
+  };
 
   const handleSubmit = async () => {
-    await form.validateFields()
+    await form.validateFields();
     const values = form.getFieldsValue();
     onSearch && onSearch(values);
-  }
+  };
 
   return (
     <Form
@@ -129,17 +129,17 @@ const FilterForm: React.ForwardRefRenderFunction<unknown, FilterFormProps> = (
         {options.sort((a, b) => (a.order || 0) - (b.order || 0)).map(
           (
             item: IField,
-            index: React.Key | null | undefined
+            index: React.Key | null | undefined,
           ) => {
-            const { valueType, valueEnum, fieldProps, ...rest } = item
+            const { valueType, valueEnum, fieldProps, ...rest } = item;
             return (
               <Col key={index} span={defaultSpan} className="iLab-filter-form-col" {...colProps}>
                 <Form.Item {...rest} >
                   {matchItem(item)}
                 </Form.Item>
               </Col>
-            )
-          }
+            );
+          },
         )}
       </Row>
       <Form.Item>
@@ -152,12 +152,12 @@ const FilterForm: React.ForwardRefRenderFunction<unknown, FilterFormProps> = (
               <Button type="primary" onClick={handleSubmit}>
                 查询
               </Button>
-            </Space>
+                          </Space>
           )}
         </Space>
       </Form.Item>
     </Form>
-  )
-}
+  );
+};
 
-export default forwardRef(FilterForm)
+export default forwardRef(FilterForm);

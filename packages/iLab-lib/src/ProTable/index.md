@@ -276,9 +276,9 @@ export default () => {
     },
   ];
 
-  const dataSource = new Array(40).fill('').map((_, index) => ({
+  const dataSource = new Array(12).fill('').map((_, index) => ({
     id: index,
-    status: 1,
+    status: index % 2 === 0 ? 1: 2,
     name: `mm-${index+1}`
   }));
 
@@ -286,6 +286,32 @@ export default () => {
     options: {
       columnSetting: true,
     },
+    actions: [
+      <Button
+        onClick={() => {
+          console.log(actionRef.current.getFilterValue());
+        }}
+        key="getFilterValue"
+      >
+        getFilterValue
+      </Button>,
+      <Button
+        onClick={() => {
+          actionRef.current.setFilterValue({ name: '麦麦' });
+        }}
+        key="setFilterValue"
+      >
+        setFieldsValue
+      </Button>,
+      <Button
+        onClick={() => {
+          actionRef.current.resetFilter()
+        }}
+        key="resetFilter"
+      >
+        resetFilter
+      </Button>,
+    ],
     slot:[<Button key="del" onClick={() => { message.info(`删除id为${selectedRows.join(',')}的数据`)}} disabled={selectedRows.length === 0}>删除</Button>],
     showFilter: true
   };
@@ -311,7 +337,7 @@ export default () => {
       dataSource={dataSource}
       rowKey="id"
       remember
-      // pagination={false}
+      pagination={false}
       rowSelection={rowSelection}
       toolbar={toolbar}
       formProps={{

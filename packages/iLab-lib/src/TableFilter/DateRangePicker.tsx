@@ -4,7 +4,7 @@ import { RangePickerProps } from 'antd/lib/date-picker';
 
 const { RangePicker } = UDatePicker;
 
-const DateRangePicker: React.FC<RangePickerProps> = props => {
+const DateRangePicker: React.FC<RangePickerProps> = (props) => {
   return <RangePicker {...props} />;
 };
 

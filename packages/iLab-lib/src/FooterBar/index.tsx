@@ -11,7 +11,7 @@ export interface FooterBarProps {
   zIndex?: number | 'auto';
 }
 
-const FooterBar: React.FC<FooterBarProps> = props => {
+const FooterBar: React.FC<FooterBarProps> = (props) => {
   const {
     className,
     style,

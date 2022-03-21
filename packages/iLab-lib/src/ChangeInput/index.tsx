@@ -1,28 +1,28 @@
-import React, { useState, useRef } from 'react'
-import { Input } from 'antd'
-import { CheckOutlined, CloseOutlined, EditOutlined } from '@ant-design/icons'
-import styles from './index.module.less'
+import React, { useState, useRef } from 'react';
+import { Input } from 'antd';
+import { CheckOutlined, CloseOutlined, EditOutlined } from '@ant-design/icons';
+import styles from './index.module.less';
 
 interface IProps {
   /* 默认值 */
-  value: string
+  value: string;
   /* 最大字数限制 */
-  maxLength?: number
+  maxLength?: number;
   /* 修改完回调 */
-  onOk?: (values: any) => void
+  onOk?: (values: any) => void;
 }
 
 const Index = (props: IProps) => {
-  const [visible, setVisible] = useState(false)
-  const { value, maxLength, onOk } = props
-  const InputRef = useRef(null)
+  const [visible, setVisible] = useState(false);
+  const { value, maxLength, onOk } = props;
+  const InputRef = useRef(null);
 
   const handleOk = () => {
     onOk &&
     // @ts-ignore
-      onOk(InputRef?.current?.state?.value)
-    setVisible(false)
-  }
+      onOk(InputRef?.current?.state?.value);
+    setVisible(false);
+  };
   return (
     <div className={styles.changeInput}>
       {!visible ? (
@@ -47,7 +47,7 @@ const Index = (props: IProps) => {
         </>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Index
+export default Index;
