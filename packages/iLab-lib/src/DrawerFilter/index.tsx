@@ -114,7 +114,7 @@ const Index: React.FC<IProps> = (props: IProps) => {
           {...filterProps}
         />
       </Drawer>
-      <div onClick={() => setVisible(true)}>
+      <div style={{ display: 'inline-block' }} onClick={() => setVisible(true)}>
         {children}
       </div>
     </>
