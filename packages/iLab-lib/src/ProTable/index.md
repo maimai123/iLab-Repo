@@ -239,7 +239,6 @@ import React, { useState, useRef } from 'react';
 import { ProTable } from 'ilab-lib';
 import { ActionType } from 'ilab-lib/lib/ProTable';
 import { Tag, Button, Space, Input, message } from 'antd';
-import moment from 'moment';
 
 export default () => {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -344,6 +343,12 @@ export default () => {
         initialValues: {
           status: 1
         },
+      }}
+      drawerProps={{
+        width: 328,
+        filterProps: {
+          column: 1
+        }
       }}
       formMode='static'
     />

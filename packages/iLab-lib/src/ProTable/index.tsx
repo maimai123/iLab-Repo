@@ -1,4 +1,4 @@
-import { Badge, ConfigProvider, Table } from 'antd';
+import { ConfigProvider, Table } from 'antd';
 import { PresetStatusColorType } from 'antd/lib/_util/colors';
 import { FormProps } from 'antd/lib/form';
 import zhCN from 'antd/lib/locale/zh_CN';
