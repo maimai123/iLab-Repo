@@ -9,3 +9,4 @@ export { default as FooterBar } from './FooterBar';
 export { default as CardDetail } from './CardDetail';
 export { default as ChangeInput } from './ChangeInput';
 export { default as Tag } from './Tag';
+export { default as ImageUpload } from './ImageUpload';

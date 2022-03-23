@@ -1,7 +1,7 @@
 import { Popover, Space } from 'antd';
 import { FormProps } from 'antd/lib/form';
 import classnames from 'classnames';
-import React, { useContext, useRef } from 'react';
+import React, { useContext } from 'react';
 
 import Icon from '@/Icon';
 
@@ -32,7 +32,8 @@ export interface ToolbarProps {
 }
 
 const Toolbar: React.FC<ToolbarProps> = (props) => {
-  const { className,
+  const {
+    className,
     style,
     actions,
     options = {},
@@ -43,7 +44,6 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
     formProps,
     onSearch,
     onReset } = props;
-  const ref = useRef<any>();
   const { refresh = false, columnSetting = false } = options;
   const { loading, fetchData } = useContext(TableContext);
 
@@ -56,7 +56,9 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
     >
       <div className={'iLab-pro-table-toolbar-side-left'}>
         {actions && (
-          <Space className={'iLab-pro-table-toolbar-actions'}>{actions}</Space>
+          <Space className={'iLab-pro-table-toolbar-actions'}>
+            {actions}
+          </Space>
         )}
       </div>
       <div className={'iLab-pro-table-toolbar-side-right'}>

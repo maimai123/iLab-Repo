@@ -24,7 +24,7 @@
   }
 
   .ant-table-container table > thead > tr:first-child th:last-child {
-    border-top-right-radius: 16px;
+    border-top-right-radius: 6px;
   }
   .ant-checkbox-checked::after {
     border-color: #00a4f5;
@@ -50,7 +50,7 @@
   }
 
   .ant-table {
-    border-radius: 16px 16px 0 0;
+    border-radius: 6px 6px 0 0;
     overflow: hidden;
   }
 
@@ -66,6 +66,29 @@
       top: -20px;
       text-align: center;
       color: #8791a3;
+    }
+  }
+  .ant-table-pagination.ant-pagination {
+    color: #344563;
+    font-size: 14px;
+
+    .ant-pagination-item a {
+      color: #344563;
+    }
+
+    .ant-pagination-item-active {
+      background-color: #00a4f5;
+      a {
+        color: #fff;
+      }
+    }
+    .ant-pagination-prev .ant-pagination-item-link,
+    .ant-pagination-next .ant-pagination-item-link,
+    .ant-pagination-item {
+      border-radius: 4px;
+    }
+    .ant-select {
+      color: #344563;
     }
   }
 }

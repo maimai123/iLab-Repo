@@ -9,7 +9,7 @@ interface Props {
   className?: string;
   rotate?: number;
   spin?: boolean;
-  onClick?: () => void;
+  onClick?: (val?: any) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   onBlur?: () => void;

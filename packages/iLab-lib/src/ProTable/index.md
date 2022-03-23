@@ -10,7 +10,7 @@ group:
 
 ```tsx
 import React, { useRef } from 'react';
-import { ProTable } from 'ilab-lib';
+import { ProTable, Icon } from 'ilab-lib';
 import { ActionType } from 'ilab-lib/lib/ProTable';
 import { Tag, Button, Space, Input } from 'antd';
 import moment from 'moment';
@@ -170,6 +170,7 @@ export default () => {
 
   const toolbar = {
     actions: [
+      <div key="title" style={{ color: '#344563', fontSize: 20 }}>示例：</div>,
       <Button
         onClick={() => {
           actionRef.current.reload();
@@ -204,10 +205,9 @@ export default () => {
       </Button>,
     ],
     options: {
-      refresh: true,
       columnSetting: true,
     },
-    slot: [<Input key="slot-input" placeholder="slot" />],
+    slot: [<Input style={{ borderRadius: 4 }} suffix={<Icon type="icon-biaoge-sousuo" style={{ color: '#8791A3' }} />} key="slot-input" placeholder="请搜索" />],
   };
 
   const actionRef = useRef<ActionType>();

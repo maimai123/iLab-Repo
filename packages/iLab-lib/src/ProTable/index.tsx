@@ -567,7 +567,7 @@ const ProTable = <RecordType extends object = any>(
                 current: page.current,
                 pageSize: page.pageSize,
                 total,
-                showQuickJumper: false,
+                showQuickJumper: true,
                 showSizeChanger: true,
                 showTotal: (t) => `共 ${t} 条`,
                 onChange: handlePageChange,
