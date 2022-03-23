@@ -14,12 +14,10 @@ interface Props {
   onMouseLeave?: () => void;
   onBlur?: () => void;
 }
+const IconFont = createFromIconfontCN({
+  scriptUrl: ['//at.alicdn.com/t/font_2601113_q39qkt42r.js'],
+});
 
 export default function Icon(props: Props): JSX.Element {
-  const { urls = [] } = props;
-  const IconFont = createFromIconfontCN({
-    scriptUrl: urls.concat(['//at.alicdn.com/t/font_2601113_q39qkt42r.js']),
-  });
-
   return <IconFont {...props} />;
 }

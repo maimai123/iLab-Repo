@@ -12,7 +12,7 @@ group:
 import React from 'react';
 import { Icon } from 'ilab-lib';
 
-export default () => <Icon type="icontongjibiao" urls={['//at.alicdn.com/t/font_1590518_8j4l04755m3.js']} />;
+export default () => <Icon type="icontongjibiao" />;
 ```
 
 
@@ -21,7 +21,6 @@ export default () => <Icon type="icontongjibiao" urls={['//at.alicdn.com/t/font_
 | 属性     | 说明     | 类型      | 默认值 |
 | -------- | -------- | --------- | ------ |
 | type | iconfont图标类型 | string | -      |
-| urls | iconfont的Symbol链接数组 | string[] | -      |
 | className | 设置图标的样式名 | string | -      |
 | className | 设置图标的样式名 | string | -      |
 | rotate | 图标旋转角度（IE9 无效） | number | -      |
