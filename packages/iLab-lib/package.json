@@ -1,6 +1,6 @@
 {
   "name": "ilab-lib",
-  "version": "0.0.41",
+  "version": "0.0.42",
   "scripts": {
     "start": "dumi dev",
     "docs:build": "dumi build",
