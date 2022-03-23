@@ -18,7 +18,7 @@ interface Props {
 export default function Icon(props: Props): JSX.Element {
   const { urls = [] } = props;
   const IconFont = createFromIconfontCN({
-    scriptUrl: urls.concat(['//at.alicdn.com/t/font_2601113_v4hbrtqz9s.js']),
+    scriptUrl: urls.concat(['//at.alicdn.com/t/font_2601113_q39qkt42r.js']),
   });
 
   return <IconFont {...props} />;
