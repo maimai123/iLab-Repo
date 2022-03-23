@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Upload, Modal, UploadProps, message, Spin } from 'antd';
-import uploadImg from '@/assets/upload_img.png';
 import Icon from '../Icon';
 import classnames from 'classnames';
 
@@ -24,7 +23,7 @@ export interface ImageUploadProps extends UploadProps {
 }
 
 const ImageUpload = (props: ImageUploadProps) => {
-  const { className, style, size, url = '/api/inventory/secure/oss/upload/file', value = [], params = {}, onSet, ...rest } = props;
+  const { className, style, size, url = '/api/inventory/secure/oss/upload/file', value = [], onSet, ...rest } = props;
   const { maxCount = 1 } = rest;
 
   const [fileList, setFileList] = useState(value);
@@ -144,7 +143,7 @@ const ImageUpload = (props: ImageUploadProps) => {
                   </>
                 ) : (
                   <>
-                    <img className="iLab-upload_default" src={uploadImg} alt="图片加载失败" />
+                    <img className="iLab-upload_default" src={require('@/assets/upload_img.png')} alt="图片加载失败" />
                     <div>上传图片</div>
                   </>
                 )
