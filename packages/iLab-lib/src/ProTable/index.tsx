@@ -10,7 +10,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Resizable, ResizeCallbackData } from 'react-resizable';
+import ResizableTitle from './ResizableTitle';
 
 import { IProps as drawerProp } from '@/DrawerFilter';
 
@@ -107,38 +107,6 @@ export interface ProTableProps<Column> extends TableProps<Column> {
   onFilterSearch?: (values: any) => void;
   onFilterReset?: () => void;
 }
-interface TitleProps {
-  width: number;
-  onResize?: (e: React.SyntheticEvent<Element, Event>, data: ResizeCallbackData) => any;
-  [x: string]: any;
-}
-// 可伸缩列
-const ResizableTitle = (props: TitleProps) => {
-  const { onResize, width, ...restProps } = props;
-
-  if (!width) {
-    return <th {...restProps} />;
-  }
-  return (
-    <Resizable
-      width={width}
-      height={0}
-      handle={
-        <span
-          className="react-resizable-handle"
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        />
-          }
-      onResize={onResize}
-      draggableOpts={{ enableUserSelectHack: false }}
-    >
-      <th {...restProps} />
-    </Resizable>
-  );
-};
-
 
 const ProTable = <RecordType extends object = any>(
   props: ProTableProps<RecordType>,
