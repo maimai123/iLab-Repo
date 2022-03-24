@@ -12,7 +12,7 @@ group:
 import React from 'react';
 import { Icon } from 'ilab-lib';
 
-export default () => <Icon type="icontongjibiao" />;
+export default () => <Icon type="icon-kucunrizhichanggui" />;
 ```
 
 
