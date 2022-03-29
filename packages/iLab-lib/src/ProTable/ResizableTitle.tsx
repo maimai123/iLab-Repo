@@ -3,7 +3,10 @@ import { Resizable, ResizeCallbackData } from 'react-resizable';
 
 interface TitleProps {
   width: number;
-  onResize?: (e: React.SyntheticEvent<Element, Event>, data: ResizeCallbackData) => any;
+  onResize?: (
+    e: React.SyntheticEvent<Element, Event>,
+    data: ResizeCallbackData,
+  ) => any;
   [x: string]: any;
 }
 // 可伸缩列
@@ -24,7 +27,7 @@ const ResizableTitle: React.FC<TitleProps> = (props: TitleProps) => {
             e.stopPropagation();
           }}
         />
-          }
+      }
       onResize={onResize}
       draggableOpts={{ enableUserSelectHack: false }}
     >

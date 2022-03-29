@@ -6,9 +6,11 @@ import React, { useContext } from 'react';
 import Icon from '@/Icon';
 
 import DrawerFilter, { IProps as drawerProp } from '../../DrawerFilter';
-import { IField } from '../../FilterForm';
+import { IField } from '../../TableFilter';
 import TableContext from '../context';
 import ColumnSetting from './ColumnSetting';
+
+import matchItem from '../../TableFilter/matchItem';
 
 import './index.less';
 
@@ -26,6 +28,7 @@ export interface ToolbarProps {
   showFilter?: boolean;
   fields?: IField[];
   drawerProps?: drawerProp;
+  leftFilter?: IField[];
   formProps?: FormProps;
   onSearch?: (values: { [x: string]: any }) => void;
   onReset?: () => void;
@@ -40,24 +43,50 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
     slot,
     showFilter,
     fields,
+    leftFilter,
     drawerProps,
     formProps,
     onSearch,
-    onReset } = props;
+    onReset,
+  } = props;
   const { refresh = false, columnSetting = false } = options;
   const { loading, fetchData } = useContext(TableContext);
 
   const showOptionsBar = Object.values(options).some((item) => item);
-
+  // @ts-ignore
+  const { initialValues } = formProps;
   return (
     <div
       className={classnames('iLab-pro-table-toolbar', className)}
       style={style}
     >
       <div className={'iLab-pro-table-toolbar-side-left'}>
-        {actions && (
+        {(actions || leftFilter?.length) && (
           <Space className={'iLab-pro-table-toolbar-actions'}>
             {actions}
+            {leftFilter?.map((item) => {
+              item.defaultValue = initialValues[item.name] || undefined;
+              if (item.valueType === 'select') {
+                // 下拉框
+                item.fieldProps.onChange = (val: any) =>
+                  onSearch && onSearch({ ...initialValues, [item.name]: val });
+              }
+              if (item.valueType === 'radio') {
+                // 单选框
+                item.fieldProps.onChange = (e: any) =>
+                  onSearch &&
+                  onSearch({ ...initialValues, [item.name]: e.target.value });
+              }
+              item.fieldProps.value = initialValues[item.name] || undefined;
+              return (
+                <div
+                  key={item.name}
+                  style={{ width: item.fieldProps?.width || 120 }}
+                >
+                  {matchItem(item)}
+                </div>
+              );
+            })}
           </Space>
         )}
       </div>

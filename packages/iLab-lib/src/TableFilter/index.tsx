@@ -3,17 +3,13 @@ import { Form, Row, Col, Space, Button } from 'antd';
 import { FormProps, FormItemProps } from 'antd/lib/form';
 import { UpOutlined, DownOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
-import Select from './Select';
-import TreeSelect from './TreeSelect';
-import Input from './Input';
-import DatePicker from './DatePicker';
-import DateRangePicker from './DateRangePicker';
-import Cascader from './Cascader';
+import matchItem from './matchItem';
 import './index.less';
 
 export type ValueType =
   | 'text'
   | 'select'
+  | 'radio'
   | 'treeSelect'
   | 'date'
   | 'dateRange'
@@ -34,6 +30,8 @@ export interface IField extends FormItemProps {
   fieldProps?: any; // 透穿给表单项内的组件的 props
   order?: number; // 排序
   show?: boolean; // 是否展示该字段
+  filterType?: 'left' | 'table' | 'filter';
+  defaultValue?: any;
 }
 
 export interface TableFilterProps {
@@ -44,8 +42,8 @@ export interface TableFilterProps {
   className?: string;
   style?: React.CSSProperties;
   actionRef?:
-  | React.MutableRefObject<ActionType | undefined>
-  | ((actionRef: ActionType) => void);
+    | React.MutableRefObject<ActionType | undefined>
+    | ((actionRef: ActionType) => void);
   mode?: 'fixed' | 'static';
   defaultCollapsed?: boolean;
 }
@@ -87,26 +85,6 @@ const TableFilter: React.FC<TableFilterProps> = ({
   useEffect(() => {
     form.setFieldsValue(formProps?.initialValues || {});
   }, [formProps?.initialValues]);
-
-
-  const matchItem = (field: IField) => {
-    switch (field.valueType) {
-      case 'select':
-        return field.valueEnum ? (
-          <Select placeholder="请选择" options={field.valueEnum} {...field.fieldProps} />
-        ) : null;
-      case 'treeSelect':
-        return <TreeSelect placeholder="请选择" {...field.fieldProps} />;
-      case 'date':
-        return <DatePicker placeholder="请选择" {...field.fieldProps} />;
-      case 'dateRange':
-        return <DateRangePicker placeholder={['开始时间', '结束时间']} {...field.fieldProps} />;
-      case 'cascader':
-        return <Cascader {...field.fieldProps} />;
-      default:
-        return <Input placeholder="请输入" {...field.fieldProps} />;
-    }
-  };
 
   // 实际渲染字段
   const renderFields = (data: IField[]) => {
@@ -158,6 +136,7 @@ const TableFilter: React.FC<TableFilterProps> = ({
               fieldProps,
               order,
               show,
+              filterType,
               ...rest
             } = filed;
             return (
@@ -192,9 +171,7 @@ const TableFilter: React.FC<TableFilterProps> = ({
                 </Button>
                 {needCollapsedButton && (
                   <Button
-                    icon={
-                      collapsed ? <DownOutlined /> : <UpOutlined />
-                    }
+                    icon={collapsed ? <DownOutlined /> : <UpOutlined />}
                     onClick={() => {
                       setCollapsed(!collapsed);
                     }}

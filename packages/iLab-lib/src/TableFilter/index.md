@@ -95,13 +95,13 @@ export default () => {
 
 #### IField
 
-| 属性        | 说明                                                                     | 类型                                                | 默认值 |
-| ----------- | ------------------------------------------------------------------------ | --------------------------------------------------- | ------ |
-| valueType   | 字段展示类型                                                             | `text \| select \| treeSelect \| date \| dateRange` | `text` |
-| valueEnum   | 当 valueType 为 select 时，配置可选项                                    | Map                                                 | -      |
-| fieldProps | 透传给查询组件的属性                                                     | object                                              | -      |
-| order       | 筛选项权重，权重大的在前                                                 | number                                              | 0      |
-| -           | 其他属性同 [Form.Item](https://ant.design/components/form-cn/#Form.Item) |                                                     | -      |
+| 属性       | 说明                                                                     | 类型                                                                               | 默认值 |
+| ---------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- | ------ |
+| valueType  | 字段展示类型                                                             | `text \| select \| treeSelect \| date \| dateRange \| radio \| cascader \| custom` |
+| valueEnum  | 当 valueType 为 select 时，配置可选项                                    | Map                                                                                | -      |
+| fieldProps | 透传给查询组件的属性                                                     | object                                                                             | -      |
+| order      | 筛选项权重，权重大的在前                                                 | number                                                                             | 0      |
+| -          | 其他属性同 [Form.Item](https://ant.design/components/form-cn/#Form.Item) |                                                                                    | -      |
 
 #### ActionRef 手动触发
 

@@ -1,39 +1,24 @@
 import React, { forwardRef, useImperativeHandle } from 'react';
-import { Row, Col, Form, Button, Space, FormProps, FormItemProps, RowProps, ColProps } from 'antd';
+import {
+  Row,
+  Col,
+  Form,
+  Button,
+  Space,
+  FormProps,
+  FormItemProps,
+  RowProps,
+  ColProps,
+} from 'antd';
 import classnames from 'classnames';
-import Select from '../TableFilter/Select';
-import TreeSelect from '../TableFilter/TreeSelect';
-import Input from '../TableFilter/Input';
-import DatePicker from '../TableFilter/DatePicker';
-import DateRangePicker from '../TableFilter/DateRangePicker';
-import Cascader from '../TableFilter/Cascader';
+import matchItem from '../TableFilter/matchItem';
+import { IField } from '../TableFilter';
 
 import './index.less';
-
-export type valueType =
-  | 'text'
-  | 'select'
-  | 'treeSelect'
-  | 'date'
-  | 'dateRange'
-  | 'cascader'
-  | 'option'
-  | 'custom';
-
 export interface ActionType {
   getFieldsValue: () => any;
   setFieldsValue: (val: any) => void;
   resetFields: () => void;
-}
-
-export interface IField extends FormItemProps {
-  label?: React.ReactNode;
-  name: string;
-  valueType?: valueType;
-  valueEnum?: Map<any, any>;
-  fieldProps?: any; // 传给内部表单组件的props
-  order?: number; // 排序
-  show?: boolean; // 是否展示该字段
 }
 
 export interface FilterFormProps {
@@ -79,27 +64,6 @@ const FilterForm: React.ForwardRefRenderFunction<unknown, FilterFormProps> = (
 
   const defaultSpan = 24 / column;
 
-  const matchItem = (field: IField) => {
-    switch (field.valueType) {
-      case 'select':
-        return field.valueEnum ? (
-          <Select placeholder="请选择" options={field.valueEnum} {...field.fieldProps} />
-        ) : null;
-      case 'treeSelect':
-        return <TreeSelect style={{ width: '100%' }} placeholder="请选择" {...field.fieldProps} />;
-      case 'date':
-        return <DatePicker style={{ width: '100%' }} placeholder="请选择" {...field.fieldProps} />;
-      case 'dateRange':
-        return <DateRangePicker style={{ width: '100%' }} placeholder={['开始时间', '结束时间']} {...field.fieldProps} />;
-      case 'cascader':
-        return <Cascader style={{ width: '100%' }} placeholder="请选择" {...field.fieldProps} />;
-      case 'custom':
-        return field.children;
-      default:
-        return <Input placeholder="请输入" {...field.fieldProps} />;
-    }
-  };
-
   const handleReset = () => {
     form.resetFields();
     if (onReset) {
@@ -126,34 +90,35 @@ const FilterForm: React.ForwardRefRenderFunction<unknown, FilterFormProps> = (
       {...formProps}
     >
       <Row gutter={16} className="iLab-filter-form-row" {...rowProps}>
-        {options.sort((a, b) => (a.order || 0) - (b.order || 0)).map(
-          (
-            item: IField,
-            index: React.Key | null | undefined,
-          ) => {
-            const { valueType, valueEnum, fieldProps, ...rest } = item;
+        {options
+          .sort((a, b) => (a.order || 0) - (b.order || 0))
+          .map((item: IField, index: React.Key | null | undefined) => {
+            const { valueType, valueEnum, fieldProps, filterType, ...rest } =
+              item;
             return (
-              <Col key={index} span={defaultSpan} className="iLab-filter-form-col" {...colProps}>
-                <Form.Item {...rest} >
-                  {matchItem(item)}
-                </Form.Item>
+              <Col
+                key={index}
+                span={defaultSpan}
+                className="iLab-filter-form-col"
+                {...colProps}
+              >
+                <Form.Item {...rest}>{matchItem(item)}</Form.Item>
               </Col>
             );
-          },
-        )}
+          })}
       </Row>
       <Form.Item>
         <Space size={12}>
-          {renderCustomAction ? (
-            renderCustomAction()
-          ) : (
-            showAction && <Space>
-              <Button onClick={handleReset}>重置</Button>
-              <Button type="primary" onClick={handleSubmit}>
-                查询
-              </Button>
-                          </Space>
-          )}
+          {renderCustomAction
+            ? renderCustomAction()
+            : showAction && (
+                <Space>
+                  <Button onClick={handleReset}>重置</Button>
+                  <Button type="primary" onClick={handleSubmit}>
+                    查询
+                  </Button>
+                </Space>
+              )}
         </Space>
       </Form.Item>
     </Form>

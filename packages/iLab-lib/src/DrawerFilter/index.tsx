@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, memo } from 'react';
 import { Drawer, Button, Space, FormItemProps, ColProps } from 'antd';
-import FilterForm, { IField } from '../FilterForm';
+import FilterForm from '../FilterForm';
+import { IField } from '../TableFilter';
 import Icon from '@/Icon';
 import { DrawerProps } from 'antd/lib/drawer';
 import { FormProps } from 'antd/lib/form';
@@ -10,7 +11,6 @@ export interface OptionsType extends FormItemProps {
   colProps?: ColProps;
 }
 
-
 export interface IProps extends DrawerProps {
   options: IField[];
   filterProps?: any;
@@ -19,8 +19,8 @@ export interface IProps extends DrawerProps {
   onSubmit: (value: any) => void;
   onReset?: () => void;
   actionRef?:
-  | React.MutableRefObject<ActionType | undefined>
-  | ((actionRef: ActionType) => void);
+    | React.MutableRefObject<ActionType | undefined>
+    | ((actionRef: ActionType) => void);
   formProps?: FormProps;
   children?: React.ReactNode;
 }
@@ -43,7 +43,12 @@ const Index: React.FC<IProps> = (props: IProps) => {
     okText = '查询',
     cancelText = '重置',
     formProps,
-    children = <Button><Icon type={'icon-biaoge-shaixuan1'} />筛选</Button>,
+    children = (
+      <Button>
+        <Icon type={'icon-biaoge-shaixuan1'} />
+        筛选
+      </Button>
+    ),
     ...rest
   } = props;
   const formRef = useRef(null);
@@ -72,7 +77,7 @@ const Index: React.FC<IProps> = (props: IProps) => {
     const fields = formRef?.current?.getFieldsValue() || {};
     setLoading(true);
     try {
-      onSubmit && await onSubmit(fields);
+      onSubmit && (await onSubmit(fields));
       setVisible(false);
       setLoading(false);
     } catch (err) {
@@ -94,7 +99,13 @@ const Index: React.FC<IProps> = (props: IProps) => {
         width={width}
         destroyOnClose
         closable={false}
-        extra={<Icon className="drawer-close" type="icon-biaoge-quxiao" onClick={() => setVisible(false)} />}
+        extra={
+          <Icon
+            className="drawer-close"
+            type="icon-biaoge-quxiao"
+            onClick={() => setVisible(false)}
+          />
+        }
         onClose={() => setVisible(false)}
         visible={visible}
         footer={
