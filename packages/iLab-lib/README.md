@@ -1,5 +1,8 @@
 # ilab-lib
 
+文档地址
+[ilab-lib](https://friendly-lichterman-e0214c.netlify.app/)
+
 ## Getting Started
 
 Install dependencies,

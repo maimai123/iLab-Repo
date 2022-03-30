@@ -441,29 +441,29 @@ tips: 开启表格右上角设置配置展示字段时，一个页面有多个�
 >
 > 组件中 `pagination` 属性中配置项 `current`、`pageSize`、`total`、`showQuickJumper`、`showSizeChanger`、`showTotal`、`onChange`、`onShowSizeChange` 已根据业务内容进行重写，重复配置无效， `current`、`pageSize` 属性可在 `defaultPagination` 中进行修改
 
-> 开启`remember`以后，需要在详情页配合，具体配置如下：
+> 开启`remember`以后，需要在详情页配合，具体配置如下（[]所需内容根据实际替换）：
 
 ```javascript
-// import React, { useEffect } from 'react';
-// import { useHistory } from "react-router-dom";
+import React, { useEffect } from 'react';
+import { useHistory } from "react-router-dom";
 
-// const history = useHistory();
-// const { pathname } = history.location;
-// let UNLISTEN: () => void;
+const history = useHistory();
+const { pathname } = history.location;
+let UNLISTEN: () => void;
 
-// useEffect(() => {
-//   UNLISTEN = history.listen((location: any) => {
-//     if (!pathname.includes(location.pathname)) { // 跳转到除列表页的其他页面清空localStorage
-//       localStorage.removeItem(`[列表页pathname]-[列表页table的id，默认为basic]-Page`)
-//       localStorage.removeItem(`[列表页pathname]-[列表页table的id，默认为basic]-Params`)
-//       localStorage.removeItem(`[列表页pathname]-[列表页table的id，默认为basic]-Sort`)
-//       localStorage.removeItem(`[列表页pathname]-[列表页table的id，默认为basic]-Filter`)
-//     }
-//   })
-//   return () => {
-//     UNLISTEN && UNLISTEN()
-//   }
-// }, [])
+useEffect(() => {
+  UNLISTEN = history.listen((location: any) => {
+    if (!pathname.includes(location.pathname)) { // 跳转到除列表页的其他页面清空localStorage
+      localStorage.removeItem(`[列表页pathname]-[列表页table的id，默认为basic]-Page`)
+      localStorage.removeItem(`[列表页pathname]-[列表页table的id，默认为basic]-Params`)
+      localStorage.removeItem(`[列表页pathname]-[列表页table的id，默认为basic]-Sort`)
+      localStorage.removeItem(`[列表页pathname]-[列表页table的id，默认为basic]-Filter`)
+    }
+  })
+  return () => {
+    UNLISTEN && UNLISTEN()
+  }
+}, [])
 ```
 
 #### ProColumn 列定义
