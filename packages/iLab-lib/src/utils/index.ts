@@ -4,7 +4,7 @@
  */
 export const removeObjectNull = (obj: { [key: string]: any }) => {
   const newObj: { [key: string]: any } = {};
-  Object.keys(obj).forEach(key => {
+  Object.keys(obj || {}).forEach((key) => {
     if (obj[key]) {
       newObj[key] = obj[key];
     }

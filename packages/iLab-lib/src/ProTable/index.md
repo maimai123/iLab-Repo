@@ -93,7 +93,7 @@ export default () => {
     },
     {
       title: 'Type',
-      width: 100,
+      width: 140,
       dataIndex: 'type',
       key: 'type',
       search: true,
@@ -107,6 +107,9 @@ export default () => {
         width: 200,
         optionType: 'button',
         buttonStyle: 'solid',
+      },
+      render: (text) => {
+        return text || '自定义render优先执行';
       },
     },
     {
@@ -225,6 +228,7 @@ export default () => {
       dataIndex: 'status',
       search: true,
       valueType: 'select',
+      filterType: 'table',
       fieldProps: {
         label: '网络',
         placeholder: '请选择状态',

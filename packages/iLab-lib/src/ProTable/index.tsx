@@ -228,10 +228,16 @@ const ProTable = <RecordType extends object = any>(
           await fetchData();
         }
       },
-      getFilterValue: () =>
-        toolbar?.showFilter
+      getFilterValue: () => {
+        // 筛选值
+        const defaultFilter = toolbar?.showFilter
           ? removeObjectNull(formData)
-          : tableFilterRef.current?.getFieldsValue() || {},
+          : {
+              ...removeObjectNull(formData),
+              ...tableFilterRef.current?.getFieldsValue(),
+            } || {};
+        return { ...defaultFilter, ...proSort, ...proFilter };
+      },
       setFilterValue: (val) => {
         if (toolbar?.showFilter) {
           setFormData(
@@ -259,7 +265,7 @@ const ProTable = <RecordType extends object = any>(
     if (actionRef && typeof actionRef !== 'function') {
       actionRef.current = userAction;
     }
-  }, [props, formData]);
+  }, [props, formData, proSort, proFilter]);
 
   // 存取Storage
   const getParamsStorage = (type: string) =>
@@ -316,7 +322,6 @@ const ProTable = <RecordType extends object = any>(
       .filter((item) => !item.hideInTable)
       .map((item) => {
         // 如果存在自定义渲染方法，则优先执行
-        if (item.render) return item;
         // 枚举值处理
         if (item.valueType === 'select' && item.valueEnum) {
           if (item?.filterType === 'table') {
@@ -327,6 +332,7 @@ const ProTable = <RecordType extends object = any>(
             }));
             item.filteredValue = proFilter[item.dataIndex] || undefined;
           }
+          if (item.render) return item;
           return {
             ...item,
             render: (value: any) => {
@@ -340,6 +346,7 @@ const ProTable = <RecordType extends object = any>(
           };
         }
         if (item.valueType === 'radio' && item.valueEnum) {
+          if (item.render) return item;
           return {
             ...item,
             render: (value: any) => {
@@ -354,9 +361,11 @@ const ProTable = <RecordType extends object = any>(
         }
         if (item?.sorter) {
           item.sortOrder = proSort[item.dataIndex] || undefined;
+          if (item.render) return item;
         }
         // 时间类型数据处理
         if (item.valueType === 'date') {
+          if (item.render) return item;
           return {
             ...item,
             render: (value: string) =>
@@ -367,7 +376,7 @@ const ProTable = <RecordType extends object = any>(
                   ),
           };
         }
-
+        if (item.render) return item;
         return {
           ...item,
           render: (value: any) =>

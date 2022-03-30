@@ -1,14 +1,17 @@
-import { Popover, Space } from 'antd';
+import { Popover, Space, Button } from 'antd';
 import { FormProps } from 'antd/lib/form';
 import classnames from 'classnames';
-import React, { useContext } from 'react';
+import { RedoOutlined } from '@ant-design/icons';
 
+import React, { useContext } from 'react';
 import Icon from '@/Icon';
+import _ from 'lodash';
 
 import DrawerFilter, { IProps as drawerProp } from '../../DrawerFilter';
 import { IField } from '../../TableFilter';
 import TableContext from '../context';
 import ColumnSetting from './ColumnSetting';
+import { removeObjectNull } from '../../utils';
 
 import matchItem from '../../TableFilter/matchItem';
 
@@ -55,6 +58,9 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
   const showOptionsBar = Object.values(options).some((item) => item);
   // @ts-ignore
   const { initialValues } = formProps;
+  const fieldNames = fields?.map((item) => item.name);
+  const searchNames = Object.keys(removeObjectNull(initialValues));
+
   return (
     <div
       className={classnames('iLab-pro-table-toolbar', className)}
@@ -93,13 +99,24 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
       <div className={'iLab-pro-table-toolbar-side-right'}>
         <Space className={'iLab-pro-table-toolbar-slot'}>
           {showFilter && fields && (
-            <DrawerFilter
-              options={fields}
-              onSubmit={(values) => onSearch && onSearch(values)}
-              onReset={() => onReset && onReset()}
-              formProps={formProps}
-              {...drawerProps}
-            />
+            <>
+              {_.intersectionWith(fieldNames, searchNames).length > 0 && (
+                <Button
+                  type="link"
+                  icon={<RedoOutlined style={{ color: '#1890ff' }} />}
+                  onClick={() => onReset && onReset()}
+                >
+                  重置
+                </Button>
+              )}
+              <DrawerFilter
+                options={fields}
+                onSubmit={(values) => onSearch && onSearch(values)}
+                onReset={() => onReset && onReset()}
+                formProps={formProps}
+                {...drawerProps}
+              />
+            </>
           )}
           {slot}
         </Space>
