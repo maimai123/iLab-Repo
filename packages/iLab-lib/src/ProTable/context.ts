@@ -1,5 +1,5 @@
 import React from 'react';
-import { ProColumn } from './index';
+import { ProColumn } from './interface';
 
 interface ITableContext<Column> {
   id: string;
@@ -15,7 +15,7 @@ interface ITableContext<Column> {
 const TableContext = React.createContext<ITableContext<any>>({
   id: 'basic',
   loading: false,
-  setLoading:  () => {},
+  setLoading: () => {},
   columns: [],
   setColumns: () => {},
   selectedDataIndex: [],

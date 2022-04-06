@@ -81,7 +81,7 @@ export default () => {
       dataIndex: 'color',
       key: 'color',
       search: true,
-      filterType: 'left',
+      filterType: 'right',
       valueType: 'select',
       valueEnum: new Map([
         [1, '红色'],
@@ -97,17 +97,11 @@ export default () => {
       dataIndex: 'type',
       key: 'type',
       search: true,
-      filterType: 'left',
       valueType: 'radio',
       valueEnum: new Map([
-        [1, '计划内'],
-        [2, '计划外'],
+        [1, '会员'],
+        [2, '非会员'],
       ]),
-      fieldProps: {
-        width: 200,
-        optionType: 'button',
-        buttonStyle: 'solid',
-      },
       render: (text) => {
         return text || '自定义render优先执行';
       },
@@ -169,10 +163,11 @@ export default () => {
       request={getList}
       rowKey="email"
       toolbar={toolbar}
+      remember
+      resetRemember={false}
       formProps={{
         initialValues: {
-          name: 'asa',
-          type: 1,
+          name: '默认name',
           color: 1,
         },
       }}
@@ -185,18 +180,31 @@ export default () => {
 ### 筛选抽屉用法
 
 ```tsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ProTable } from 'ilab-lib';
 import { ActionType } from 'ilab-lib/lib/ProTable';
 import { Tag, Button, Space, Input, message } from 'antd';
 
 export default () => {
   const [selectedRows, setSelectedRows] = useState([]);
+  const [province, setProvince] = useState(undefined);
+  const citys = {
+    1: [{ label: '杭州市', value: 1 }],
+    2: [{ label: '松江区', value: 12 }],
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      // 为了获取到最新的参数
+      setProvince(actionRef.current.getFilterValue().province);
+    }, 10);
+  }, []);
 
   const columns = [
     {
       title: 'ID',
       dataIndex: 'id',
+      sorter: true,
     },
     {
       title: '姓名',
@@ -204,7 +212,10 @@ export default () => {
       width: 200,
       order: 2,
       search: true,
+      valueType: 'search',
+      filterType: 'right',
       fieldProps: {
+        width: 206,
         placeholder: '请输入姓名',
       },
     },
@@ -238,6 +249,47 @@ export default () => {
         [1, { text: '在线', status: 'success' }],
         [2, { text: '离线', status: 'error' }],
       ]),
+    },
+    {
+      title: '省',
+      order: 5,
+      dataIndex: 'province',
+      key: 'province',
+      search: true,
+      valueType: 'select',
+      valueEnum: new Map([
+        [1, '浙江省'],
+        [2, '上海市'],
+        [3, '北京市'],
+        [4, '广州市'],
+      ]),
+      fieldProps: {
+        onChange: (val) => {
+          setProvince(val);
+          try {
+            actionRef.current.setFilterValue({
+              province: val,
+              city: (citys[val] && citys[val][0]?.value) || undefined,
+            });
+          } catch (err) {
+            console.log(err);
+          }
+        },
+      },
+    },
+    {
+      title: '市',
+      order: 6,
+      dataIndex: 'city',
+      key: 'city',
+      search: true,
+      valueType: 'select',
+      fieldProps: {
+        disabled: !province,
+      },
+      valueEnum: new Map(
+        (citys[province] || []).map((item) => [item.value, item.label]),
+      ),
     },
     {
       title: 'Tree',
@@ -292,11 +344,6 @@ export default () => {
       },
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
-    },
-    {
       title: '操作',
       dataIndex: 'operate',
       key: 'operate',
@@ -310,6 +357,7 @@ export default () => {
     status: index % 2 === 0 ? 1 : 2,
     name: `mm-${index + 1}`,
     date: 1648107265980,
+    province: index > 3 ? 1 : index + 1,
   }));
 
   const toolbar = {
@@ -395,7 +443,13 @@ export default () => {
       scroll={{ x: 'max-content' }}
       formProps={{
         initialValues: {
-          status: 1,
+          name: '默认',
+        },
+        filters: {
+          status: [1],
+        },
+        sorters: {
+          id: 'ascend',
         },
       }}
       drawerProps={{
@@ -416,36 +470,37 @@ export default () => {
 
 tips: 开启表格右上角设置配置展示字段时，一个页面有多个表格可能导致存取 localStorage 冲突，可使用传递不同 id 避免
 
-| 属性              | 说明                                                                            | 类型                                                                | 默认值                         |
-| ----------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------ |
-| id                | 表格唯一标识符                                                                  | string                                                              | 'basic'                        |
-| request           | 获取 `dataSource` 的方法                                                        | `(params?: {pageSize,current},sort,filter) => {data,success,total}` | -                              |
-| params            | 用于 request 查询的额外参数，一旦变化会触发重新加载                             | object                                                              | -                              |
-| columns           | 列定义，[ProColumn](#procolumn-列定义)                                          |                                                                     | --                             |
-| tableClassName    | 表格类名                                                                        | string                                                              | --                             |
-| tableStyle        | 表格样式                                                                        | `React.CSSProperties`                                               | --                             |
-| formClassName     | 搜索表单类名                                                                    | string                                                              | --                             |
-| formStyle         | 搜索表单样式                                                                    | `React.CSSProperties`                                               | --                             |
-| formProps         | 搜索表单属性，详见 antd [Form 组件](https://ant.design/components/form-cn/#API) | object                                                              | --                             |
-| toolbar           | 工具栏                                                                          | [Toolbar](#toolbar-props-定义)                                      | --                             |
-| actionRef         | Table action 的引用，便于自定义触发，[ActionRef 手动触发](#actionref-手动触发)  | `MutableRefObject<FormInstance>`                                    | --                             |
-| defaultPagination | 默认分页方式                                                                    | `{ current: number, pageSize: number }`                             | `{ current: 1, pageSize: 10 }` |
-| formMode          | 搜索项展开的展示模式                                                            | `fixed` \| `static`                                                 | `fixed`                        |
-| defaultCollapsed  | 搜索表单默认收起状态                                                            | boolean                                                             | true                           |
-| remember          | 是否记住搜索参数和分页（需要在详情页面配合，详情的路由需包含列表路由）          | boolean                                                             | false                          |
-| drawerProps       | 开启 toolbar.showFilter 后，透传抽屉组件配置                                    | 详情见 DrawerFilter 组件                                            | --                             |
-| onFilterSearch    | 搜索回调                                                                        | (values: any) => void                                               | --                             |
-| onFilterReset     | 重置回调                                                                        | () => void                                                          | --                             |
+| 属性              | 说明                                                                                                                            | 类型                                                                | 默认值                         |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------ |
+| id                | 表格唯一标识符                                                                                                                  | string                                                              | 'basic'                        |
+| request           | 获取 `dataSource` 的方法                                                                                                        | `(params?: {pageSize,current},sort,filter) => {data,success,total}` | -                              |
+| params            | 用于 request 查询的额外参数，一旦变化会触发重新加载                                                                             | object                                                              | -                              |
+| columns           | 列定义，[ProColumn](#procolumn-列定义)                                                                                          |                                                                     | --                             |
+| tableClassName    | 表格类名                                                                                                                        | string                                                              | --                             |
+| tableStyle        | 表格样式                                                                                                                        | `React.CSSProperties`                                               | --                             |
+| formClassName     | 搜索表单类名                                                                                                                    | string                                                              | --                             |
+| formStyle         | 搜索表单样式                                                                                                                    | `React.CSSProperties`                                               | --                             |
+| formProps         | 搜索表单属性，详见 antd [Form 组件](https://ant.design/components/form-cn/#API) filters 表头筛选默认值， sorters 表头排序默认值 | object                                                              | --                             |
+| toolbar           | 工具栏                                                                                                                          | [Toolbar](#toolbar-props-定义)                                      | --                             |
+| actionRef         | Table action 的引用，便于自定义触发，[ActionRef 手动触发](#actionref-手动触发)                                                  | `MutableRefObject<FormInstance>`                                    | --                             |
+| defaultPagination | 默认分页方式                                                                                                                    | `{ current: number, pageSize: number }`                             | `{ current: 1, pageSize: 10 }` |
+| formMode          | 搜索项展开的展示模式                                                                                                            | `fixed` \| `static`                                                 | `fixed`                        |
+| defaultCollapsed  | 搜索表单默认收起状态                                                                                                            | boolean                                                             | true                           |
+| remember          | 是否记住搜索参数和分页（需要在详情页面配合，详情的路由需包含列表路由）                                                          | boolean                                                             | false                          |
+| resetRemember     | 是否清除搜索参数 （需先开启 remember，默认跳转不包含路由清除搜索参数，设置为 false 后可自行控制是否清除搜索参数）               | boolean                                                             | true                           |
+| drawerProps       | 开启 toolbar.showFilter 后，透传抽屉组件配置                                                                                    | 详情见 DrawerFilter 组件                                            | --                             |
+| onFilterSearch    | 搜索回调                                                                                                                        | (values: any) => void                                               | --                             |
+| onFilterReset     | 重置回调                                                                                                                        | () => void                                                          | --                             |
 
 > **注意**
 >
 > 组件中 `pagination` 属性中配置项 `current`、`pageSize`、`total`、`showQuickJumper`、`showSizeChanger`、`showTotal`、`onChange`、`onShowSizeChange` 已根据业务内容进行重写，重复配置无效， `current`、`pageSize` 属性可在 `defaultPagination` 中进行修改
 
-> 开启`remember`以后，需要在详情页配合，具体配置如下（[]所需内容根据实际替换）：
+> 开启`remember`以后，需要在详情页配合，具体配置如下：
 
 ```javascript
 import React, { useEffect } from 'react';
-import { useHistory } from "react-router-dom";
+import { useHistory } from 'react-router-dom';
 
 const history = useHistory();
 const { pathname } = history.location;
@@ -453,34 +508,43 @@ let UNLISTEN: () => void;
 
 useEffect(() => {
   UNLISTEN = history.listen((location: any) => {
-    if (!pathname.includes(location.pathname)) { // 跳转到除列表页的其他页面清空localStorage
-      localStorage.removeItem(`[列表页pathname]-[列表页table的id，默认为basic]-Page`)
-      localStorage.removeItem(`[列表页pathname]-[列表页table的id，默认为basic]-Params`)
-      localStorage.removeItem(`[列表页pathname]-[列表页table的id，默认为basic]-Sort`)
-      localStorage.removeItem(`[列表页pathname]-[列表页table的id，默认为basic]-Filter`)
+    if (!pathname.includes(location.pathname)) {
+      // 跳转到除列表页的其他页面清空localStorage
+      localStorage.removeItem(
+        `[列表页pathname]-[列表页table的id，默认为basic]-Page`,
+      );
+      localStorage.removeItem(
+        `[列表页pathname]-[列表页table的id，默认为basic]-Params`,
+      );
+      localStorage.removeItem(
+        `[列表页pathname]-[列表页table的id，默认为basic]-Sort`,
+      );
+      localStorage.removeItem(
+        `[列表页pathname]-[列表页table的id，默认为basic]-Filter`,
+      );
     }
-  })
+  });
   return () => {
-    UNLISTEN && UNLISTEN()
-  }
-}, [])
+    UNLISTEN && UNLISTEN();
+  };
+}, []);
 ```
 
 #### ProColumn 列定义
 
-| 属性           | 说明                                                                          | 类型                                                                               | 默认值                                            |
-| -------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------- | ----------------------------- |
-| title          | 列头显示文字，如搜索名称和表格名称不一致 可配置 fieldProps.label 指定搜索名称 | ReactNode                                                                          | ({ sortOrder, sortColumn, filters }) => ReactNode | -- （函数用法 3.10.0 后支持） |
-| dataIndex      | 列数据在数据项中对应的路径                                                    | string                                                                             | --                                                |
-| key            | React 需要的 key，如果已经设置了唯一的 dataIndex，可以忽略这个属性            | string                                                                             | --                                                |
-| valueType      | 渲染值类型                                                                    | `text \| select \| treeSelect \| date \| dateRange \| radio \| cascader \| custom` | text                                              |
-| valueEnum      | 值的枚举，会自动转化把值当成 key 来取出要显示的内容                           | [ValueEnum](#valueenum-定义)                                                       | -                                                 |
-| search         | 是否在搜索栏中显示                                                            | boolean                                                                            | false                                             |
-| fieldProps     | 透传给查询组件的属性                                                          | object                                                                             | -                                                 |
-| hideInTable    | 是否在表格中隐藏                                                              | boolean                                                                            | false                                             |
-| dateTimeFormat | 时间类型数据显示格式                                                          | string                                                                             | `yyyy-MM-DD HH:mm:ss`                             |
-| order          | 筛选项权重，权重大的在前                                                      | number                                                                             | 0                                                 |
-| filterType     | 筛选位置配置(开启 search 有效)                                                | `left \| table \| filter `                                                         | filter                                            |
+| 属性           | 说明                                                                          | 类型                                                                                         | 默认值                                            |
+| -------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------- | ----------------------------- |
+| title          | 列头显示文字，如搜索名称和表格名称不一致 可配置 fieldProps.label 指定搜索名称 | ReactNode                                                                                    | ({ sortOrder, sortColumn, filters }) => ReactNode | -- （函数用法 3.10.0 后支持） |
+| dataIndex      | 列数据在数据项中对应的路径                                                    | string                                                                                       | --                                                |
+| key            | React 需要的 key，如果已经设置了唯一的 dataIndex，可以忽略这个属性            | string                                                                                       | --                                                |
+| valueType      | 渲染值类型                                                                    | `text \| search \| select \| treeSelect \| date \| dateRange \| radio \| cascader \| custom` | text                                              |
+| valueEnum      | 值的枚举，会自动转化把值当成 key 来取出要显示的内容                           | [ValueEnum](#valueenum-定义)                                                                 | -                                                 |
+| search         | 是否在搜索栏中显示                                                            | boolean                                                                                      | false                                             |
+| fieldProps     | 透传给查询组件的属性                                                          | object                                                                                       | -                                                 |
+| hideInTable    | 是否在表格中隐藏                                                              | boolean                                                                                      | false                                             |
+| dateTimeFormat | 时间类型数据显示格式                                                          | string                                                                                       | `yyyy-MM-DD HH:mm:ss`                             |
+| order          | 筛选项权重，权重大的在前                                                      | number                                                                                       | 0                                                 |
+| filterType     | 筛选位置配置(开启 search 有效)                                                | `right \| table \| filter `                                                                  | filter                                            |
 
 #### ValueEnum 定义
 
@@ -522,6 +586,7 @@ interface ActionType {
   getFilterValue: () => object;
   setFilterValue: (val: any) => void;
   resetFilter: () => void;
+  getPage: () => void;
 }
 
 const ref = useRef<ActionType>();
@@ -535,6 +600,8 @@ ref.current.getFilterValue();
 ref.current.setFilterValue(val);
 // 重置搜索框数据
 ref.current.resetFilter();
+// 获取分页数据
+ref.current.getPage();
 ```
 
 #### 两个格式参数方法

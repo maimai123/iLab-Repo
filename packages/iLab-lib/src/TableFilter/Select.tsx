@@ -8,6 +8,7 @@ export type SelectProps = Omit<
 'SECRET_COMBOBOX_MODE_DO_NOT_USE' | 'Option' | 'OptGroup'
 > & {
   options: Map<any, any>;
+  [x: string]: any;
 };
 
 const Select: React.FC<SelectProps> = ({ options, ...rest }) => {

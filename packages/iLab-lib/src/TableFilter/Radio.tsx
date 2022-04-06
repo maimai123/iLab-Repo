@@ -3,9 +3,9 @@ import { Radio as URadio } from 'antd';
 import { RadioProps } from 'antd/lib/radio';
 
 const Radio: React.FC<
-  RadioProps & {
-    options: Map<any, any>;
-  }
+RadioProps & {
+  options: Map<any, any>;
+}
 > = ({ options, ...rest }) => {
   return (
     <URadio.Group

@@ -1,24 +1,16 @@
 import { ConfigProvider, Table } from 'antd';
-import { PresetStatusColorType } from 'antd/lib/_util/colors';
-import { FormProps } from 'antd/lib/form';
 import zhCN from 'antd/lib/locale/zh_CN';
-import Tag from '../Tag';
-import { ColumnProps, TableProps } from 'antd/lib/table';
 import { Key, SorterResult } from 'antd/lib/table/interface';
 import classnames from 'classnames';
 import _ from 'lodash';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import ResizableTitle from './ResizableTitle';
-
-import { IProps as drawerProp } from '@/DrawerFilter';
-
 import TableFilter, {
   ActionType as TableFilterActionType,
   IField,
-  ValueType as TableFilterValueType,
 } from '../TableFilter';
+import Tag from '../Tag';
 import { removeObjectNull } from '../utils';
 import {
   DEFAULT_DATE_TIME_FORMAT,
@@ -26,86 +18,16 @@ import {
   DEFAULT_PAGINATION,
 } from './constants';
 import TableContext from './context';
-import Toolbar, { ToolbarProps } from './Toolbar';
-
 import './index.less';
-
-export interface RequestData {
-  success: boolean;
-  data?: any[];
-  total: number;
-}
-
-type IValueEnum = Map<
-  any,
-  | string
-  | {
-      text: string;
-      status: PresetStatusColorType;
-      icon?: React.ReactNode;
-    }
->;
-
-interface IPagination {
-  current: number;
-  pageSize: number;
-}
-
-export interface ProColumn<T = any> extends ColumnProps<T> {
-  dataIndex: string;
-  valueType?: TableFilterValueType;
-  valueEnum?: IValueEnum;
-  search?: boolean;
-  hideInTable?: boolean;
-  dateTimeFormat?: string;
-  fieldProps?: any;
-  order?: number;
-  filterType?: 'left' | 'table' | 'filter';
-}
-
-export interface ActionType {
-  reload: (resetPageIndex?: boolean) => void;
-  getFilterValue: () => object;
-  setFilterValue: (val: any) => void;
-  resetFilter: () => void;
-}
+import ResizableTitle from './ResizableTitle';
+import Toolbar from './Toolbar';
+import { IPagination, ProColumn, ActionType, ProTableProps } from './interface';
 
 ConfigProvider.config({
   theme: {
     primaryColor: '#00A4F5',
   },
 });
-
-export interface ProTableProps<Column> extends TableProps<Column> {
-  id?: string;
-  request?: (
-    params: object,
-    sort: {
-      [key: string]: 'ascend' | 'descend';
-    },
-    filter: { [key: string]: React.ReactText[] },
-  ) => Promise<RequestData>;
-  params?: object;
-  columns: Array<ProColumn<Column>>;
-  className?: string;
-  style?: React.CSSProperties;
-  tableClassName?: string;
-  tableStyle?: React.CSSProperties;
-  formClassName?: string;
-  formStyle?: React.CSSProperties;
-  formProps?: FormProps;
-  toolbar?: ToolbarProps;
-  actionRef?:
-    | React.MutableRefObject<ActionType | undefined>
-    | ((actionRef: ActionType) => void);
-  defaultPagination?: IPagination;
-  formMode?: 'fixed' | 'static';
-  defaultCollapsed?: boolean;
-  drawerProps?: drawerProp; // 筛选组件
-  remember?: boolean; // 记住page功能
-  onFilterSearch?: (values: any) => void;
-  onFilterReset?: () => void;
-}
 
 const ProTable = <RecordType extends object = any>(
   props: ProTableProps<RecordType>,
@@ -130,6 +52,7 @@ const ProTable = <RecordType extends object = any>(
     drawerProps,
     pagination,
     remember,
+    resetRemember = true,
     onFilterSearch,
     onFilterReset,
     ...rest
@@ -140,7 +63,7 @@ const ProTable = <RecordType extends object = any>(
   const [loading, setLoading] = useState<boolean>(false);
   // 表格字段
   const [tableColumns, setTableColumns] = useState<
-    Array<ProColumn<RecordType>>
+  Array<ProColumn<RecordType>>
   >([]);
   // 选中列字段
   const [selectedDataIndex, setSelectedDataIndex] = useState<string[]>([]);
@@ -190,9 +113,7 @@ const ProTable = <RecordType extends object = any>(
       const localParams = getParamsStorage('Params');
       const localSort = getParamsStorage('Sort');
       const localFilter = getParamsStorage('Filter');
-      setPage(
-        (localPagination && JSON.parse(localPagination)) || defaultPagination,
-      );
+
       // 设置搜索参数，默认根据localStorage取
       const sParams = (localParams && JSON.parse(localParams)) || null;
       sParams &&
@@ -208,9 +129,17 @@ const ProTable = <RecordType extends object = any>(
             }
           }
         });
+      setPage(
+        (localPagination && JSON.parse(localPagination)) || defaultPagination,
+      );
+      setProSort((localSort && JSON.parse(localSort)) || formProps?.sorters || {});
+      setProFilter((localFilter && JSON.parse(localFilter)) || formProps?.filters || {});
       setFormData(_.cloneDeep(sParams || formProps?.initialValues));
-      setProSort((localSort && JSON.parse(localSort)) || {});
-      setProFilter((localFilter && JSON.parse(localFilter)) || {});
+    } else {
+      removeParamsStorage('Page');
+      removeParamsStorage('Params');
+      removeParamsStorage('Sort');
+      removeParamsStorage('Filter');
     }
     return () => {
       UNLISTEN && UNLISTEN();
@@ -233,9 +162,9 @@ const ProTable = <RecordType extends object = any>(
         const defaultFilter = toolbar?.showFilter
           ? removeObjectNull(formData)
           : {
-              ...removeObjectNull(formData),
-              ...tableFilterRef.current?.getFieldsValue(),
-            } || {};
+            ...removeObjectNull(formData),
+            ...tableFilterRef.current?.getFieldsValue(),
+          } || {};
         return { ...defaultFilter, ...proSort, ...proFilter };
       },
       setFilterValue: (val) => {
@@ -258,6 +187,7 @@ const ProTable = <RecordType extends object = any>(
           tableFilterRef.current?.resetFields();
         }
       },
+      getPage: () => page,
     };
     if (actionRef && typeof actionRef === 'function') {
       actionRef(userAction);
@@ -276,7 +206,7 @@ const ProTable = <RecordType extends object = any>(
       localStorage.setItem(`${pathname}-${id}-${type}`, JSON.stringify(param));
   };
   const removeParamsStorage = (type: string) =>
-    remember && localStorage.removeItem(`${pathname}-${id}-${type}`);
+    remember && resetRemember && localStorage.removeItem(`${pathname}-${id}-${type}`);
 
   // 是否为日期格式
   const isDateFormat = (value: string) =>
@@ -293,7 +223,8 @@ const ProTable = <RecordType extends object = any>(
       valueEnum: item.valueEnum,
       fieldProps: item.fieldProps,
       order: item.order,
-      filterType: item.filterType,
+      filterType: item.filterType || 'filter',
+      customRender: item.customRender,
     }))
     .map((item) => {
       const map = new Map();
@@ -307,12 +238,11 @@ const ProTable = <RecordType extends object = any>(
       };
     });
 
-  const filterFields = fields.filter(
-    (item) => !item.filterType || item.filterType === 'filter',
-  );
-  const leftFields = fields.filter(
-    (item) => item.filterType && item.filterType === 'left',
-  );
+  const getFilterByType = (type: 'filter' | 'right' | 'table') => {
+    return type ? fields.filter(
+      (item) => item.filterType && item.filterType === type,
+    ) : fields || [];
+  };
 
   // 表格渲染字段
   const formatColumns: <T>(col: Array<ProColumn<T>>) => Array<ProColumn<T>> = (
@@ -369,18 +299,18 @@ const ProTable = <RecordType extends object = any>(
           return {
             ...item,
             render: (value: string) =>
-              isInvalidValue(value)
+              (isInvalidValue(value)
                 ? DEFAULT_EMPTY_VALUE
                 : moment(value).format(
-                    item.dateTimeFormat || DEFAULT_DATE_TIME_FORMAT,
-                  ),
+                  item.dateTimeFormat || DEFAULT_DATE_TIME_FORMAT,
+                )),
           };
         }
         if (item.render) return item;
         return {
           ...item,
           render: (value: any) =>
-            isInvalidValue(value) ? DEFAULT_EMPTY_VALUE : value,
+            (isInvalidValue(value) ? DEFAULT_EMPTY_VALUE : value),
         };
       });
     // 从localStorage取 || 全部选中
@@ -431,9 +361,8 @@ const ProTable = <RecordType extends object = any>(
       onFilterSearch(values);
     }
     try {
-      const mergeObj = _.merge(formData, values);
-      setFormData(_.cloneDeep(mergeObj));
-      setParamsStorage('Params', mergeObj);
+      setFormData(_.cloneDeep({ ...formData, ...values }));
+      setParamsStorage('Params', _.cloneDeep({ ...formData, ...values }));
       setParamsStorage('Page', {
         current: 1,
         pageSize: defaultPagination.pageSize,
@@ -445,22 +374,30 @@ const ProTable = <RecordType extends object = any>(
   };
 
   // 搜索重置
-  const onTableFilterReset = async () => {
+  const onTableFilterReset = async (resetAll?: boolean) => {
     if (onFilterReset) {
       onFilterReset();
     }
     try {
-      const { initialValues } = localFormProps;
-      const leftData: any = {};
-      leftFields
+      const defaultIniValues = formProps?.initialValues || {}; // 初始设置的默认字段
+      const { initialValues } = localFormProps; // 本地存的字段
+      const rightData: any = {};
+      getFilterByType('right')
         .map((item) => item.name)
         .forEach((name) => {
-          leftData[name] = initialValues[name] || undefined;
+          rightData[name] = resetAll ? defaultIniValues[name] : initialValues[name] || undefined;
         });
       const resetFormData = {
         ...formProps?.initialValues,
-        ...leftData,
+        ...rightData,
       };
+
+      if (resetAll) { // 点击全部重置，所有参数重置
+        setProFilter({});
+        setParamsStorage('Filter', {});
+        setProSort({});
+        setParamsStorage('Sort', {});
+      }
 
       setFormData(_.cloneDeep(resetFormData));
       // 为了解决点击重置时需要点两下才清空的bug，强制reset
@@ -510,14 +447,14 @@ const ProTable = <RecordType extends object = any>(
 
   const handleResize =
     (index: number) =>
-    (e: any, { size }: any) => {
-      const nextColumns = [...tableColumns];
-      nextColumns[index] = {
-        ...nextColumns[index],
-        width: size.width,
+      (e: any, { size }: any) => {
+        const nextColumns = [...tableColumns];
+        nextColumns[index] = {
+          ...nextColumns[index],
+          width: size.width,
+        };
+        setTableColumns(nextColumns);
       };
-      setTableColumns(nextColumns);
-    };
 
   const resetColumn = tableColumns
     .map((col: any, index: any) => {
@@ -555,7 +492,7 @@ const ProTable = <RecordType extends object = any>(
             <TableFilter
               className={classnames('iLab-pro-table-filter', formClassName)}
               style={formStyle}
-              fields={filterFields}
+              fields={getFilterByType('filter')}
               onSearch={onTableFilterSearch}
               onReset={onTableFilterReset}
               formProps={localFormProps}
@@ -568,8 +505,9 @@ const ProTable = <RecordType extends object = any>(
           {toolbar && (
             <Toolbar
               {...toolbar}
-              fields={filterFields}
-              leftFilter={leftFields}
+              fields={getFilterByType('filter')}
+              rightFilter={getFilterByType('right')}
+              tableFilter={getFilterByType('table')}
               drawerProps={drawerProps}
               formProps={localFormProps}
               onSearch={onTableFilterSearch}
@@ -617,8 +555,8 @@ const ProTable = <RecordType extends object = any>(
               changePagination,
               filters: Record<string, Array<Key | boolean> | null>,
               sorter:
-                | SorterResult<RecordType>
-                | Array<SorterResult<RecordType>>,
+              | SorterResult<RecordType>
+              | Array<SorterResult<RecordType>>,
               extra,
             ) => {
               if (rest.onChange) {

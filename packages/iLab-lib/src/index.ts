@@ -11,3 +11,5 @@ export { default as ChangeInput } from './ChangeInput';
 export { default as Tag } from './Tag';
 export { default as SingleImageUpload } from './SingleImageUpload';
 export { default as MultiImageUpload } from './MultiImageUpload';
+export { default as Modal } from './Modal';
+export { default as EditableTable } from './EditableTable';

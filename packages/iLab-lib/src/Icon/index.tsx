@@ -14,7 +14,7 @@ interface Props {
   onBlur?: () => void;
 }
 const IconFont = createFromIconfontCN({
-  scriptUrl: ['//at.alicdn.com/t/font_2601113_q39qkt42r.js'],
+  scriptUrl: ['//at.alicdn.com/t/font_2601113_1ohje6cbjbf.js'],
 });
 
 export default function Icon(props: Props): JSX.Element {

@@ -1,7 +1,7 @@
 @import '../styles/index.less';
 
 .iLab-pro-table {
-  padding: @Sp-6;
+  padding: 18px 24px;
   background-color: #ffffff;
   border-radius: 6px;
 
@@ -12,8 +12,14 @@
 
   .ant-table-thead > tr > th {
     background: #e3eaf1;
-    font-size: 16px;
+    font-size: 14px;
+    padding: 16px 16px;
     color: #344563;
+  }
+  .ant-table-tbody > tr > td,
+  .ant-table tfoot > tr > th,
+  .ant-table tfoot > tr > td {
+    padding: 15px 16px 14px;
   }
   .ant-table-tbody > tr.ant-table-row-selected > td {
     background-color: #dcf3ff;

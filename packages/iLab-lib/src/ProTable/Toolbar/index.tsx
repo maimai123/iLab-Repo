@@ -1,7 +1,6 @@
-import { Popover, Space, Button } from 'antd';
+import { Popover, Space } from 'antd';
 import { FormProps } from 'antd/lib/form';
 import classnames from 'classnames';
-import { RedoOutlined } from '@ant-design/icons';
 
 import React, { useContext } from 'react';
 import Icon from '@/Icon';
@@ -31,10 +30,11 @@ export interface ToolbarProps {
   showFilter?: boolean;
   fields?: IField[];
   drawerProps?: drawerProp;
-  leftFilter?: IField[];
+  rightFilter?: IField[];
+  tableFilter?: IField[];
   formProps?: FormProps;
   onSearch?: (values: { [x: string]: any }) => void;
-  onReset?: () => void;
+  onReset?: (resetAll?: boolean) => void;
 }
 
 const Toolbar: React.FC<ToolbarProps> = (props) => {
@@ -46,7 +46,8 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
     slot,
     showFilter,
     fields,
-    leftFilter,
+    rightFilter,
+    tableFilter,
     drawerProps,
     formProps,
     onSearch,
@@ -57,9 +58,14 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
 
   const showOptionsBar = Object.values(options).some((item) => item);
   // @ts-ignore
-  const { initialValues } = formProps;
-  const fieldNames = fields?.map((item) => item.name);
+  const initialValues = formProps?.initialValues || {};
+  const allFields = [...(fields || []), ...(rightFilter || []), ...(tableFilter || [])];
+  const fieldNames = allFields?.map((item) => item.name);
   const searchNames = Object.keys(removeObjectNull(initialValues));
+
+  // 搜索框放到最右边
+  const leftFilters = rightFilter?.filter((item) => item.valueType !== 'search');
+  const rightFilters = rightFilter?.filter((item) => item.valueType === 'search');
 
   return (
     <div
@@ -67,48 +73,49 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
       style={style}
     >
       <div className={'iLab-pro-table-toolbar-side-left'}>
-        {(actions || leftFilter?.length) && (
+        {actions && (
           <Space className={'iLab-pro-table-toolbar-actions'}>
             {actions}
-            {leftFilter?.map((item) => {
-              item.defaultValue = initialValues[item.name] || undefined;
-              if (item.valueType === 'select') {
-                // 下拉框
-                item.fieldProps.onChange = (val: any) =>
-                  onSearch && onSearch({ ...initialValues, [item.name]: val });
-              }
-              if (item.valueType === 'radio') {
-                // 单选框
-                item.fieldProps.onChange = (e: any) =>
-                  onSearch &&
-                  onSearch({ ...initialValues, [item.name]: e.target.value });
-              }
-              item.fieldProps.value = initialValues[item.name] || undefined;
-              return (
-                <div
-                  key={item.name}
-                  style={{ width: item.fieldProps?.width || 120 }}
-                >
-                  {matchItem(item)}
-                </div>
-              );
-            })}
           </Space>
         )}
       </div>
       <div className={'iLab-pro-table-toolbar-side-right'}>
         <Space className={'iLab-pro-table-toolbar-slot'}>
+          {showFilter && fields && _.intersectionWith(fieldNames, searchNames).length > 0 && (
+            <div className="iLab-pro-table-toolbar-reset" key="reset" onClick={() => onReset && onReset(true)}>
+              <Icon type="icon-zhongzhi1" />
+              重置
+            </div>
+          )}
+          {/* 左侧下拉等筛选 */}
+          {!!leftFilters?.length && leftFilters?.map((item) => {
+            item.defaultValue = initialValues[item.name] || undefined;
+            if (item.valueType === 'select') {
+            // 下拉框
+              item.fieldProps.onChange = (val: any) =>
+                onSearch && onSearch({ ...initialValues, [item.name]: val });
+            }
+            if (item.valueType === 'radio') {
+            // 单选框
+              item.fieldProps.onChange = (e: any) =>
+                onSearch &&
+              onSearch({ ...initialValues, [item.name]: e.target.value });
+            }
+            item.fieldProps.value = initialValues[item.name] || undefined;
+            return (
+              <div
+                key={item.name}
+                style={{ width: item.fieldProps?.width || 120 }}
+              >
+                {matchItem(item)}
+              </div>
+            );
+          })}
+          {/* 用户传进来的插槽 */}
+          {slot}
+          {/* 筛选按钮 */}
           {showFilter && fields && (
             <>
-              {_.intersectionWith(fieldNames, searchNames).length > 0 && (
-                <Button
-                  type="link"
-                  icon={<RedoOutlined style={{ color: '#1890ff' }} />}
-                  onClick={() => onReset && onReset()}
-                >
-                  重置
-                </Button>
-              )}
               <DrawerFilter
                 options={fields}
                 onSubmit={(values) => onSearch && onSearch(values)}
@@ -118,7 +125,27 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
               />
             </>
           )}
-          {slot}
+          {/* 搜索框 */}
+          {!!rightFilters?.length && rightFilters?.map((item) => {
+            item.defaultValue = initialValues[item.name] || undefined;
+            if (item.valueType === 'search') {
+              item.fieldProps.onChange = (e: any) => onSearch &&
+                  onSearch({ ...initialValues, [item.name]: e.target.value });
+              // 搜索框
+              item.fieldProps.onSearch = (val: string) =>
+                onSearch &&
+                onSearch({ ...initialValues, [item.name]: val });
+            }
+            item.fieldProps.value = initialValues[item.name] || undefined;
+            return (
+              <div
+                key={item.name}
+                style={{ width: item.fieldProps?.width || 120 }}
+              >
+                {matchItem(item)}
+              </div>
+            );
+          })}
         </Space>
         {showOptionsBar && (
           <Space className={'iLab-pro-table-toolbar-options'} size={12}>

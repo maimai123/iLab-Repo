@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import {
   Row,
   Col,
@@ -6,7 +6,6 @@ import {
   Button,
   Space,
   FormProps,
-  FormItemProps,
   RowProps,
   ColProps,
 } from 'antd';
@@ -15,6 +14,7 @@ import matchItem from '../TableFilter/matchItem';
 import { IField } from '../TableFilter';
 
 import './index.less';
+
 export interface ActionType {
   getFieldsValue: () => any;
   setFieldsValue: (val: any) => void;
@@ -55,6 +55,10 @@ const FilterForm: React.ForwardRefRenderFunction<unknown, FilterFormProps> = (
 
   const [form] = Form.useForm();
 
+  useEffect(() => {
+    form.setFieldsValue(formProps?.initialValues);
+  }, [formProps?.initialValues]); // 监听外部设置更新
+
   useImperativeHandle(parentRef, () => {
     return {
       ...form,
@@ -93,8 +97,14 @@ const FilterForm: React.ForwardRefRenderFunction<unknown, FilterFormProps> = (
         {options
           .sort((a, b) => (a.order || 0) - (b.order || 0))
           .map((item: IField, index: React.Key | null | undefined) => {
-            const { valueType, valueEnum, fieldProps, filterType, ...rest } =
-              item;
+            const {
+              valueType,
+              valueEnum,
+              fieldProps,
+              filterType,
+              customRender,
+              ...rest
+            } = item;
             return (
               <Col
                 key={index}
@@ -112,13 +122,13 @@ const FilterForm: React.ForwardRefRenderFunction<unknown, FilterFormProps> = (
           {renderCustomAction
             ? renderCustomAction()
             : showAction && (
-                <Space>
-                  <Button onClick={handleReset}>重置</Button>
-                  <Button type="primary" onClick={handleSubmit}>
-                    查询
-                  </Button>
-                </Space>
-              )}
+            <Space>
+              <Button onClick={handleReset}>重置</Button>
+              <Button type="primary" onClick={handleSubmit}>
+                查询
+              </Button>
+            </Space>
+            )}
         </Space>
       </Form.Item>
     </Form>

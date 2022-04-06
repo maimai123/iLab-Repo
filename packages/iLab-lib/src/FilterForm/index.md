@@ -97,7 +97,7 @@ export default () => {
       label: '自定义',
       name: 'custom',
       valueType: 'custom',
-      children: <Input placeholder="请输入内容" />,
+      customRender: <Input placeholder="请输入内容" />,
     },
   ];
   return (
@@ -170,13 +170,14 @@ export default () => {
 
 #### IField
 
-| 属性       | 说明                                                                     | 类型                                                                               | 默认值 |
-| ---------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- | ------ |
-| valueType  | 字段展示类型                                                             | `text \| select \| treeSelect \| date \| dateRange \| radio \| cascader \| custom` |
-| valueEnum  | 当 valueType 为 select 时，配置可选项                                    | Map                                                                                | -      |
-| fieldProps | 透传给查询组件的属性                                                     | object                                                                             | -      |
-| order      | 筛选项权重，权重大的在前                                                 | number                                                                             | 0      |
-| -          | 其他属性同 [Form.Item](https://ant.design/components/form-cn/#Form.Item) |                                                                                    | -      |
+| 属性         | 说明                                                                     | 类型                                                                               | 默认值 |
+| ------------ | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- | ------ |
+| valueType    | 字段展示类型                                                             | `text \| select \| treeSelect \| date \| dateRange \| radio \| cascader \| custom` |
+| valueEnum    | 当 valueType 为 select 时，配置可选项                                    | Map                                                                                | -      |
+| fieldProps   | 透传给查询组件的属性                                                     | object                                                                             | -      |
+| order        | 筛选项权重，权重大的在前                                                 | number                                                                             | 0      |
+| customRender | 自定义元素（valueType 为 custom 时有效）                                 | React.reactNode                                                                    | 0      |
+| -            | 其他属性同 [Form.Item](https://ant.design/components/form-cn/#Form.Item) |                                                                                    | -      |
 
 #### ref 手动触发
 

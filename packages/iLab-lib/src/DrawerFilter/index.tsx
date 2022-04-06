@@ -19,8 +19,8 @@ export interface IProps extends DrawerProps {
   onSubmit: (value: any) => void;
   onReset?: () => void;
   actionRef?:
-    | React.MutableRefObject<ActionType | undefined>
-    | ((actionRef: ActionType) => void);
+  | React.MutableRefObject<ActionType | undefined>
+  | ((actionRef: ActionType) => void);
   formProps?: FormProps;
   children?: React.ReactNode;
 }

@@ -4,6 +4,7 @@ import Select from './Select';
 import Radio from './Radio';
 import TreeSelect from './TreeSelect';
 import Input from './Input';
+import Search from './Search';
 import DatePicker from './DatePicker';
 import DateRangePicker from './DateRangePicker';
 import Cascader from './Cascader';
@@ -11,6 +12,12 @@ import './index.less';
 
 export default (field: IField) => {
   switch (field.valueType) {
+    case 'search':
+      return (<Search
+        className="default-width"
+        placeholder="请输入"
+        {...field.fieldProps}
+      />);
     case 'select':
       return field.valueEnum ? (
         <Select
@@ -61,7 +68,7 @@ export default (field: IField) => {
         />
       ) : null;
     case 'custom':
-      return field.children;
+      return field.customRender;
     default:
       return (
         <Input

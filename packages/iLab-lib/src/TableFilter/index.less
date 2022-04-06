@@ -46,4 +46,28 @@
 }
 .default-width {
   width: 100%;
+  border-radius: 4px;
+
+  // 搜索框样式改造 =====START=====
+
+  .ant-input-affix-wrapper-focused,
+  .ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover,
+  .ant-input:hover,
+  .ant-input:focus {
+    border-color: #d9d9d9;
+    border-right: none;
+    box-shadow: none;
+  }
+
+  > .ant-input-group
+    > .ant-input-group-addon:last-child
+    .ant-input-search-button:not(.ant-btn-primary) {
+    border-left: 1px solid transparent;
+
+    &:hover {
+      border: 1px solid #d9d9d9;
+      border-left: 1px solid transparent;
+    }
+  }
+  // 搜索框样式改造 =====END=====
 }

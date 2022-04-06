@@ -8,6 +8,7 @@ import './index.less';
 
 export type ValueType =
   | 'text'
+  | 'search'
   | 'select'
   | 'radio'
   | 'treeSelect'
@@ -30,8 +31,9 @@ export interface IField extends FormItemProps {
   fieldProps?: any; // 透穿给表单项内的组件的 props
   order?: number; // 排序
   show?: boolean; // 是否展示该字段
-  filterType?: 'left' | 'table' | 'filter';
+  filterType?: 'right' | 'table' | 'filter';
   defaultValue?: any;
+  customRender?: React.ReactNode;
 }
 
 export interface TableFilterProps {
@@ -42,8 +44,8 @@ export interface TableFilterProps {
   className?: string;
   style?: React.CSSProperties;
   actionRef?:
-    | React.MutableRefObject<ActionType | undefined>
-    | ((actionRef: ActionType) => void);
+  | React.MutableRefObject<ActionType | undefined>
+  | ((actionRef: ActionType) => void);
   mode?: 'fixed' | 'static';
   defaultCollapsed?: boolean;
 }
@@ -137,6 +139,7 @@ const TableFilter: React.FC<TableFilterProps> = ({
               order,
               show,
               filterType,
+              customRender,
               ...rest
             } = filed;
             return (
